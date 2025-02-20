@@ -1,8 +1,9 @@
 #include "openmc/mesh.h"
 #include <algorithm> // for copy, equal, min, min_element
-#include <cmath>     // for ceil
-#include <cstddef>   // for size_t
-#include <gsl/gsl-lite.hpp>
+#include <cassert>
+#define _USE_MATH_DEFINES // to make M_PI declared in Intel and MSVC compilers
+#include <cmath>          // for ceil
+#include <cstddef>        // for size_t
 #include <string>
 
 #ifdef OPENMC_MPI
@@ -109,11 +110,13 @@ Mesh::Mesh(pugi::xml_node node)
 {
   // Read mesh id
   id_ = std::stoi(get_node_value(node, "id"));
+  if (check_for_node(node, "name"))
+    name_ = get_node_value(node, "name");
 }
 
 void Mesh::set_id(int32_t id)
 {
-  Expects(id >= 0 || id == C_NONE);
+  assert(id >= 0 || id == C_NONE);
 
   // Clear entry in mesh map in case one was already assigned
   if (id_ != C_NONE) {
@@ -151,7 +154,7 @@ vector<double> Mesh::volumes() const
 }
 
 int Mesh::material_volumes(
-  int n_sample, int bin, gsl::span<MaterialVolume> result, uint64_t* seed) const
+  int n_sample, int bin, span<MaterialVolume> result, uint64_t* seed) const
 {
   vector<int32_t> materials;
   vector<int64_t> hits;
@@ -236,6 +239,28 @@ vector<Mesh::MaterialVolume> Mesh::material_volumes(
   return result;
 }
 
+void Mesh::to_hdf5(hid_t group) const
+{
+  // Create group for mesh
+  std::string group_name = fmt::format("mesh {}", id_);
+  hid_t mesh_group = create_group(group, group_name.c_str());
+
+  // Write mesh type
+  write_dataset(mesh_group, "type", this->get_mesh_type());
+
+  // Write mesh ID
+  write_attribute(mesh_group, "id", id_);
+
+  // Write mesh name
+  write_dataset(mesh_group, "name", name_);
+
+  // Write mesh data
+  this->to_hdf5_inner(mesh_group);
+
+  // Close group
+  close_group(mesh_group);
+}
+
 //==============================================================================
 // Structured Mesh implementation
 //==============================================================================
@@ -283,7 +308,6 @@ Position StructuredMesh::sample_element(
 
 UnstructuredMesh::UnstructuredMesh(pugi::xml_node node) : Mesh(node)
 {
-
   // check the mesh type
   if (check_for_node(node, "type")) {
     auto temp = get_node_value(node, "type", true, true);
@@ -389,11 +413,8 @@ std::string UnstructuredMesh::bin_label(int bin) const
   return fmt::format("Mesh Index ({})", bin);
 };
 
-void UnstructuredMesh::to_hdf5(hid_t group) const
+void UnstructuredMesh::to_hdf5_inner(hid_t mesh_group) const
 {
-  hid_t mesh_group = create_group(group, fmt::format("mesh {}", id_));
-
-  write_dataset(mesh_group, "type", mesh_type);
   write_dataset(mesh_group, "filename", filename_);
   write_dataset(mesh_group, "library", this->library());
   if (!options_.empty()) {
@@ -453,8 +474,6 @@ void UnstructuredMesh::to_hdf5(hid_t group) const
   write_dataset(mesh_group, "volumes", volumes);
   write_dataset(mesh_group, "connectivity", connectivity);
   write_dataset(mesh_group, "element_types", elem_types);
-
-  close_group(mesh_group);
 }
 
 void UnstructuredMesh::set_length_multiplier(double length_multiplier)
@@ -948,17 +967,12 @@ std::pair<vector<double>, vector<double>> RegularMesh::plot(
   return {axis_lines[0], axis_lines[1]};
 }
 
-void RegularMesh::to_hdf5(hid_t group) const
+void RegularMesh::to_hdf5_inner(hid_t mesh_group) const
 {
-  hid_t mesh_group = create_group(group, "mesh " + std::to_string(id_));
-
-  write_dataset(mesh_group, "type", "regular");
   write_dataset(mesh_group, "dimension", get_x_shape());
   write_dataset(mesh_group, "lower_left", lower_left_);
   write_dataset(mesh_group, "upper_right", upper_right_);
   write_dataset(mesh_group, "width", width_);
-
-  close_group(mesh_group);
 }
 
 xt::xtensor<double, 1> RegularMesh::count_sites(
@@ -1138,16 +1152,11 @@ std::pair<vector<double>, vector<double>> RectilinearMesh::plot(
   return {axis_lines[0], axis_lines[1]};
 }
 
-void RectilinearMesh::to_hdf5(hid_t group) const
+void RectilinearMesh::to_hdf5_inner(hid_t mesh_group) const
 {
-  hid_t mesh_group = create_group(group, "mesh " + std::to_string(id_));
-
-  write_dataset(mesh_group, "type", "rectilinear");
   write_dataset(mesh_group, "x_grid", grid_[0]);
   write_dataset(mesh_group, "y_grid", grid_[1]);
   write_dataset(mesh_group, "z_grid", grid_[2]);
-
-  close_group(mesh_group);
 }
 
 double RectilinearMesh::volume(const MeshIndex& ijk) const
@@ -1417,17 +1426,12 @@ std::pair<vector<double>, vector<double>> CylindricalMesh::plot(
   return {axis_lines[0], axis_lines[1]};
 }
 
-void CylindricalMesh::to_hdf5(hid_t group) const
+void CylindricalMesh::to_hdf5_inner(hid_t mesh_group) const
 {
-  hid_t mesh_group = create_group(group, "mesh " + std::to_string(id_));
-
-  write_dataset(mesh_group, "type", "cylindrical");
   write_dataset(mesh_group, "r_grid", grid_[0]);
   write_dataset(mesh_group, "phi_grid", grid_[1]);
   write_dataset(mesh_group, "z_grid", grid_[2]);
   write_dataset(mesh_group, "origin", origin_);
-
-  close_group(mesh_group);
 }
 
 double CylindricalMesh::volume(const MeshIndex& ijk) const
@@ -1733,17 +1737,12 @@ std::pair<vector<double>, vector<double>> SphericalMesh::plot(
   return {axis_lines[0], axis_lines[1]};
 }
 
-void SphericalMesh::to_hdf5(hid_t group) const
+void SphericalMesh::to_hdf5_inner(hid_t mesh_group) const
 {
-  hid_t mesh_group = create_group(group, "mesh " + std::to_string(id_));
-
-  write_dataset(mesh_group, "type", SphericalMesh::mesh_type);
   write_dataset(mesh_group, "r_grid", grid_[0]);
   write_dataset(mesh_group, "theta_grid", grid_[1]);
   write_dataset(mesh_group, "phi_grid", grid_[2]);
   write_dataset(mesh_group, "origin", origin_);
-
-  close_group(mesh_group);
 }
 
 double SphericalMesh::volume(const MeshIndex& ijk) const
@@ -3185,13 +3184,13 @@ void LibMesh::set_score_data(const std::string& var_name,
     // set value
     vector<libMesh::dof_id_type> value_dof_indices;
     dof_map.dof_indices(*it, value_dof_indices, value_num);
-    Ensures(value_dof_indices.size() == 1);
+    assert(value_dof_indices.size() == 1);
     eqn_sys.solution->set(value_dof_indices[0], values.at(bin));
 
     // set std dev
     vector<libMesh::dof_id_type> std_dev_dof_indices;
     dof_map.dof_indices(*it, std_dev_dof_indices, std_dev_num);
-    Ensures(std_dev_dof_indices.size() == 1);
+    assert(std_dev_dof_indices.size() == 1);
     eqn_sys.solution->set(std_dev_dof_indices[0], std_dev.at(bin));
   }
 }

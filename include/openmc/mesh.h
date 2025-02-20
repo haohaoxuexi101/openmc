@@ -9,13 +9,13 @@
 #include "hdf5.h"
 #include "pugixml.hpp"
 #include "xtensor/xtensor.hpp"
-#include <gsl/gsl-lite.hpp>
 
 #include "openmc/bounding_box.h"
 #include "openmc/error.h"
 #include "openmc/memory.h" // for unique_ptr
 #include "openmc/particle.h"
 #include "openmc/position.h"
+#include "openmc/span.h"
 #include "openmc/vector.h"
 #include "openmc/xml_interface.h"
 
@@ -132,13 +132,18 @@ public:
 
   int32_t id() const { return id_; }
 
+  const std::string& name() const { return name_; }
+
   //! Set the mesh ID
   void set_id(int32_t id = -1);
+
+  //! Write the mesh data to an HDF5 group
+  void to_hdf5(hid_t group) const;
 
   //! Write mesh data to an HDF5 group
   //
   //! \param[in] group HDF5 group
-  virtual void to_hdf5(hid_t group) const = 0;
+  virtual void to_hdf5_inner(hid_t group) const = 0;
 
   //! Find the mesh lines that intersect an axis-aligned slice plot
   //
@@ -174,8 +179,8 @@ public:
   //! \param[out] Array of (material index, volume) for desired element
   //! \param[inout] seed Pseudorandom number seed
   //! \return Number of materials within element
-  int material_volumes(int n_sample, int bin, gsl::span<MaterialVolume> volumes,
-    uint64_t* seed) const;
+  int material_volumes(
+    int n_sample, int bin, span<MaterialVolume> volumes, uint64_t* seed) const;
 
   //! Determine volume of materials within a single mesh elemenet
   //
@@ -202,7 +207,8 @@ public:
   // Data members
   xt::xtensor<double, 1> lower_left_;  //!< Lower-left coordinates of mesh
   xt::xtensor<double, 1> upper_right_; //!< Upper-right coordinates of mesh
-  int id_ {-1};                        //!< User-specified ID
+  int id_ {-1};                        //!< Mesh ID
+  std::string name_;                   //!< User-specified name
   int n_dimension_ {-1};               //!< Number of dimensions
 };
 
@@ -410,7 +416,7 @@ public:
   std::pair<vector<double>, vector<double>> plot(
     Position plot_ll, Position plot_ur) const override;
 
-  void to_hdf5(hid_t group) const override;
+  void to_hdf5_inner(hid_t group) const override;
 
   //! Get the coordinate for the mesh grid boundary in the positive direction
   //!
@@ -460,7 +466,7 @@ public:
   std::pair<vector<double>, vector<double>> plot(
     Position plot_ll, Position plot_ur) const override;
 
-  void to_hdf5(hid_t group) const override;
+  void to_hdf5_inner(hid_t group) const override;
 
   //! Get the coordinate for the mesh grid boundary in the positive direction
   //!
@@ -506,7 +512,7 @@ public:
   std::pair<vector<double>, vector<double>> plot(
     Position plot_ll, Position plot_ur) const override;
 
-  void to_hdf5(hid_t group) const override;
+  void to_hdf5_inner(hid_t group) const override;
 
   double volume(const MeshIndex& ijk) const override;
 
@@ -570,7 +576,7 @@ public:
   std::pair<vector<double>, vector<double>> plot(
     Position plot_ll, Position plot_ur) const override;
 
-  void to_hdf5(hid_t group) const override;
+  void to_hdf5_inner(hid_t group) const override;
 
   double r(int i) const { return grid_[0][i]; }
   double theta(int i) const { return grid_[1][i]; }
@@ -632,7 +638,7 @@ public:
   void surface_bins_crossed(Position r0, Position r1, const Direction& u,
     vector<int>& bins) const override;
 
-  void to_hdf5(hid_t group) const override;
+  void to_hdf5_inner(hid_t group) const override;
 
   std::string bin_label(int bin) const override;
 
