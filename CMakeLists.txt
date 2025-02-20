@@ -25,7 +25,7 @@ endif()
 # Command line options
 #===============================================================================
 
-option(OPENMC_USE_OPENMP      "Enable shared-memory parallelism with OpenMP"         ON)
+option(OPENMC_USE_OPENMP      "Enable shared-memory parallelism with OpenMP"         OFF)
 option(OPENMC_BUILD_TESTS     "Build tests"                                          ON)
 option(OPENMC_ENABLE_PROFILE  "Compile with profiling flags"                         OFF)
 option(OPENMC_ENABLE_COVERAGE "Compile with coverage analysis flags"                 OFF)
