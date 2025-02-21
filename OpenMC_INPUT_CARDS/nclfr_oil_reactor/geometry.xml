@@ -1,0 +1,294 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<geometry>
+  <cell id="1" material="1" region="-1 8 -4" universe="1"/>
+  <cell id="2" material="6" region="-1 4 -5" universe="1"/>
+  <cell id="3" material="6" region="-1 9 -8" universe="1"/>
+  <cell id="4" material="4" region="1 -2 9 -5" universe="1"/>
+  <cell id="5" material="4" region="-2 5 -6" universe="1"/>
+  <cell id="6" material="5" region="2 -3 9 -6" universe="1"/>
+  <cell id="7" material="5" region="-3 6 -7" universe="1"/>
+  <cell id="8" material="5" region="-3 -9 10" universe="1"/>
+  <cell id="9" material="7" region="3 | -10 | 7" universe="1"/>
+  <cell id="10" material="2" region="-1 8 -4" universe="2"/>
+  <cell id="11" material="6" region="-1 4 -5" universe="2"/>
+  <cell id="12" material="6" region="-1 9 -8" universe="2"/>
+  <cell id="13" material="4" region="1 -2 9 -5" universe="2"/>
+  <cell id="14" material="4" region="-2 5 -6" universe="2"/>
+  <cell id="15" material="5" region="2 -3 9 -6" universe="2"/>
+  <cell id="16" material="5" region="-3 6 -7" universe="2"/>
+  <cell id="17" material="5" region="-3 -9 10" universe="2"/>
+  <cell id="18" material="7" region="3 | -10 | 7" universe="2"/>
+  <cell id="19" material="3" region="-1 8 -4" universe="3"/>
+  <cell id="20" material="6" region="-1 4 -5" universe="3"/>
+  <cell id="21" material="6" region="-1 9 -8" universe="3"/>
+  <cell id="22" material="4" region="1 -2 9 -5" universe="3"/>
+  <cell id="23" material="4" region="-2 5 -6" universe="3"/>
+  <cell id="24" material="5" region="2 -3 9 -6" universe="3"/>
+  <cell id="25" material="5" region="-3 6 -7" universe="3"/>
+  <cell id="26" material="5" region="-3 -9 10" universe="3"/>
+  <cell id="27" material="7" region="3 | -10 | 7" universe="3"/>
+  <cell id="28" material="8" region="-11 13 -14" universe="4"/>
+  <cell id="29" material="6" region="-11 15 -13" universe="4"/>
+  <cell id="30" material="5" region="11 -12 15 -14" universe="4"/>
+  <cell id="31" material="7" region="12 | -15 | 14" universe="4"/>
+  <cell id="48" material="10" region="-36 38 -39" universe="9"/>
+  <cell id="49" material="6" region="-36 40 -38" universe="9"/>
+  <cell id="50" material="5" region="36 -37 40 -39" universe="9"/>
+  <cell id="51" material="7" region="37 | -40 | 39" universe="9"/>
+  <cell id="52" material="6" region="-2 10 -7" universe="10"/>
+  <cell id="53" material="5" region="-3 2 10 -7" universe="10"/>
+  <cell id="54" material="7" region="3 | -10 | 7" universe="10"/>
+  <cell id="55" material="7" universe="11"/>
+  <cell fill="9" id="56" region="-53 54 -55 -58 56 57 -7 10" universe="14"/>
+  <cell id="57" material="5" region="~(-53 54 -55 -58 56 57) (-47 48 -49 -52 50 51) -7 10" universe="14"/>
+  <cell fill="13" id="58" region="-41 42 -43 -46 44 45 ~(-47 48 -49 -52 50 51) -7 10" universe="14"/>
+  <cell id="59" material="7" region="~(-41 42 -43 -46 44 45) | 7 | -10" universe="14"/>
+  <cell fill="4" id="60" region="-53 54 -55 -58 56 57 -7 10" universe="16"/>
+  <cell id="61" material="5" region="~(-53 54 -55 -58 56 57) (-47 48 -49 -52 50 51) -7 10" universe="16"/>
+  <cell fill="15" id="62" region="-41 42 -43 -46 44 45 ~(-47 48 -49 -52 50 51) -7 10" universe="16"/>
+  <cell id="63" material="7" region="~(-41 42 -43 -46 44 45) | 7 | -10" universe="16"/>
+  <cell fill="9" id="64" region="-53 54 -55 -58 56 57 -7 10" universe="18"/>
+  <cell id="65" material="5" region="~(-53 54 -55 -58 56 57) (-47 48 -49 -52 50 51) -7 10" universe="18"/>
+  <cell fill="17" id="66" region="-41 42 -43 -46 44 45 ~(-47 48 -49 -52 50 51) -7 10" universe="18"/>
+  <cell id="67" material="7" region="~(-41 42 -43 -46 44 45) | 7 | -10" universe="18"/>
+  <cell fill="4" id="68" region="-53 54 -55 -58 56 57 -7 10" universe="20"/>
+  <cell id="69" material="5" region="~(-53 54 -55 -58 56 57) (-47 48 -49 -52 50 51) -7 10" universe="20"/>
+  <cell fill="19" id="70" region="-41 42 -43 -46 44 45 ~(-47 48 -49 -52 50 51) -7 10" universe="20"/>
+  <cell id="71" material="7" region="~(-41 42 -43 -46 44 45) | 7 | -10" universe="20"/>
+  <cell fill="9" id="72" region="-53 54 -55 -58 56 57 -7 10" universe="22"/>
+  <cell id="73" material="5" region="~(-53 54 -55 -58 56 57) (-47 48 -49 -52 50 51) -7 10" universe="22"/>
+  <cell fill="21" id="74" region="-41 42 -43 -46 44 45 ~(-47 48 -49 -52 50 51) -7 10" universe="22"/>
+  <cell id="75" material="7" region="~(-41 42 -43 -46 44 45) | 7 | -10" universe="22"/>
+  <cell fill="4" id="76" region="-53 54 -55 -58 56 57 -7 10" universe="24"/>
+  <cell id="77" material="5" region="~(-53 54 -55 -58 56 57) (-47 48 -49 -52 50 51) -7 10" universe="24"/>
+  <cell fill="23" id="78" region="-41 42 -43 -46 44 45 ~(-47 48 -49 -52 50 51) -7 10" universe="24"/>
+  <cell id="79" material="7" region="~(-41 42 -43 -46 44 45) | 7 | -10" universe="24"/>
+  <cell fill="25" id="80" region="-41 42 -43 -46 44 45 -7 10" universe="26"/>
+  <cell id="81" material="7" region="~(-41 42 -43 -46 44 45) | 7 | -10" universe="26"/>
+  <cell fill="27" id="82" region="-59 -60 61" rotation="0.0 0.0 30.0" universe="28"/>
+  <hex_lattice id="13" n_rings="9" name="inner_s assembly" orientation="x">
+    <pitch>1.36</pitch>
+    <outer>11</outer>
+    <center>0.0 0.0</center>
+    <universes>
+                1   1   1   1   1   1   1   1   1 
+              1   1   1   1   1   1   1   1   1   1 
+            1   1   1   1   1   1   1   1   1   1   1 
+          1   1   1   1   1   1   1   1   1   1   1   1 
+        1   1   1   1   1   1   1   1   1   1   1   1   1 
+      1   1   1   1   1   1   1   1   1   1   1   1   1   1 
+    1   1   1   1   1   1   11  11  11  1   1   1   1   1   1 
+  1   1   1   1   1   1   11  11  11  11  1   1   1   1   1   1 
+1   1   1   1   1   1   11  11  11  11  11  1   1   1   1   1   1 
+  1   1   1   1   1   1   11  11  11  11  1   1   1   1   1   1 
+    1   1   1   1   1   1   11  11  11  1   1   1   1   1   1 
+      1   1   1   1   1   1   1   1   1   1   1   1   1   1 
+        1   1   1   1   1   1   1   1   1   1   1   1   1 
+          1   1   1   1   1   1   1   1   1   1   1   1 
+            1   1   1   1   1   1   1   1   1   1   1 
+              1   1   1   1   1   1   1   1   1   1 
+                1   1   1   1   1   1   1   1   1 </universes>
+  </hex_lattice>
+  <hex_lattice id="15" n_rings="9" name="inner_c assembly" orientation="x">
+    <pitch>1.36</pitch>
+    <outer>11</outer>
+    <center>0.0 0.0</center>
+    <universes>
+                1   1   1   1   1   1   1   1   1 
+              1   1   1   1   1   1   1   1   1   1 
+            1   1   1   1   1   1   1   1   1   1   1 
+          1   1   1   1   1   1   1   1   1   1   1   1 
+        1   1   1   1   1   1   1   1   1   1   1   1   1 
+      1   1   1   1   1   1   1   1   1   1   1   1   1   1 
+    1   1   1   1   1   1   11  11  11  1   1   1   1   1   1 
+  1   1   1   1   1   1   11  11  11  11  1   1   1   1   1   1 
+1   1   1   1   1   1   11  11  11  11  11  1   1   1   1   1   1 
+  1   1   1   1   1   1   11  11  11  11  1   1   1   1   1   1 
+    1   1   1   1   1   1   11  11  11  1   1   1   1   1   1 
+      1   1   1   1   1   1   1   1   1   1   1   1   1   1 
+        1   1   1   1   1   1   1   1   1   1   1   1   1 
+          1   1   1   1   1   1   1   1   1   1   1   1 
+            1   1   1   1   1   1   1   1   1   1   1 
+              1   1   1   1   1   1   1   1   1   1 
+                1   1   1   1   1   1   1   1   1 </universes>
+  </hex_lattice>
+  <hex_lattice id="17" n_rings="9" name="middle_s assembly" orientation="x">
+    <pitch>1.36</pitch>
+    <outer>11</outer>
+    <center>0.0 0.0</center>
+    <universes>
+                2   2   2   2   2   2   2   2   2 
+              2   2   2   2   2   2   2   2   2   2 
+            2   2   2   2   2   2   2   2   2   2   2 
+          2   2   2   2   2   2   2   2   2   2   2   2 
+        2   2   2   2   2   2   2   2   2   2   2   2   2 
+      2   2   2   2   2   2   2   2   2   2   2   2   2   2 
+    2   2   2   2   2   2   11  11  11  2   2   2   2   2   2 
+  2   2   2   2   2   2   11  11  11  11  2   2   2   2   2   2 
+2   2   2   2   2   2   11  11  11  11  11  2   2   2   2   2   2 
+  2   2   2   2   2   2   11  11  11  11  2   2   2   2   2   2 
+    2   2   2   2   2   2   11  11  11  2   2   2   2   2   2 
+      2   2   2   2   2   2   2   2   2   2   2   2   2   2 
+        2   2   2   2   2   2   2   2   2   2   2   2   2 
+          2   2   2   2   2   2   2   2   2   2   2   2 
+            2   2   2   2   2   2   2   2   2   2   2 
+              2   2   2   2   2   2   2   2   2   2 
+                2   2   2   2   2   2   2   2   2 </universes>
+  </hex_lattice>
+  <hex_lattice id="19" n_rings="9" name="middle_c assembly" orientation="x">
+    <pitch>1.36</pitch>
+    <outer>11</outer>
+    <center>0.0 0.0</center>
+    <universes>
+                2   2   2   2   2   2   2   2   2 
+              2   2   2   2   2   2   2   2   2   2 
+            2   2   2   2   2   2   2   2   2   2   2 
+          2   2   2   2   2   2   2   2   2   2   2   2 
+        2   2   2   2   2   2   2   2   2   2   2   2   2 
+      2   2   2   2   2   2   2   2   2   2   2   2   2   2 
+    2   2   2   2   2   2   11  11  11  2   2   2   2   2   2 
+  2   2   2   2   2   2   11  11  11  11  2   2   2   2   2   2 
+2   2   2   2   2   2   11  11  11  11  11  2   2   2   2   2   2 
+  2   2   2   2   2   2   11  11  11  11  2   2   2   2   2   2 
+    2   2   2   2   2   2   11  11  11  2   2   2   2   2   2 
+      2   2   2   2   2   2   2   2   2   2   2   2   2   2 
+        2   2   2   2   2   2   2   2   2   2   2   2   2 
+          2   2   2   2   2   2   2   2   2   2   2   2 
+            2   2   2   2   2   2   2   2   2   2   2 
+              2   2   2   2   2   2   2   2   2   2 
+                2   2   2   2   2   2   2   2   2 </universes>
+  </hex_lattice>
+  <hex_lattice id="21" n_rings="9" name="outer_s assembly" orientation="x">
+    <pitch>1.36</pitch>
+    <outer>11</outer>
+    <center>0.0 0.0</center>
+    <universes>
+                3   3   3   3   3   3   3   3   3 
+              3   3   3   3   3   3   3   3   3   3 
+            3   3   3   3   3   3   3   3   3   3   3 
+          3   3   3   3   3   3   3   3   3   3   3   3 
+        3   3   3   3   3   3   3   3   3   3   3   3   3 
+      3   3   3   3   3   3   3   3   3   3   3   3   3   3 
+    3   3   3   3   3   3   11  11  11  3   3   3   3   3   3 
+  3   3   3   3   3   3   11  11  11  11  3   3   3   3   3   3 
+3   3   3   3   3   3   11  11  11  11  11  3   3   3   3   3   3 
+  3   3   3   3   3   3   11  11  11  11  3   3   3   3   3   3 
+    3   3   3   3   3   3   11  11  11  3   3   3   3   3   3 
+      3   3   3   3   3   3   3   3   3   3   3   3   3   3 
+        3   3   3   3   3   3   3   3   3   3   3   3   3 
+          3   3   3   3   3   3   3   3   3   3   3   3 
+            3   3   3   3   3   3   3   3   3   3   3 
+              3   3   3   3   3   3   3   3   3   3 
+                3   3   3   3   3   3   3   3   3 </universes>
+  </hex_lattice>
+  <hex_lattice id="23" n_rings="9" name="outer_c assembly" orientation="x">
+    <pitch>1.36</pitch>
+    <outer>11</outer>
+    <center>0.0 0.0</center>
+    <universes>
+                3   3   3   3   3   3   3   3   3 
+              3   3   3   3   3   3   3   3   3   3 
+            3   3   3   3   3   3   3   3   3   3   3 
+          3   3   3   3   3   3   3   3   3   3   3   3 
+        3   3   3   3   3   3   3   3   3   3   3   3   3 
+      3   3   3   3   3   3   3   3   3   3   3   3   3   3 
+    3   3   3   3   3   3   11  11  11  3   3   3   3   3   3 
+  3   3   3   3   3   3   11  11  11  11  3   3   3   3   3   3 
+3   3   3   3   3   3   11  11  11  11  11  3   3   3   3   3   3 
+  3   3   3   3   3   3   11  11  11  11  3   3   3   3   3   3 
+    3   3   3   3   3   3   11  11  11  3   3   3   3   3   3 
+      3   3   3   3   3   3   3   3   3   3   3   3   3   3 
+        3   3   3   3   3   3   3   3   3   3   3   3   3 
+          3   3   3   3   3   3   3   3   3   3   3   3 
+            3   3   3   3   3   3   3   3   3   3   3 
+              3   3   3   3   3   3   3   3   3   3 
+                3   3   3   3   3   3   3   3   3 </universes>
+  </hex_lattice>
+  <hex_lattice id="25" n_rings="9" name="reflect assembly" orientation="x">
+    <pitch>1.36</pitch>
+    <outer>11</outer>
+    <center>0.0 0.0</center>
+    <universes>
+                10  10  10  10  10  10  10  10  10
+              10  10  10  10  10  10  10  10  10  10
+            10  10  10  10  10  10  10  10  10  10  10
+          10  10  10  10  10  10  10  10  10  10  10  10
+        10  10  10  10  10  10  10  10  10  10  10  10  10
+      10  10  10  10  10  10  10  10  10  10  10  10  10  10
+    10  10  10  10  10  10  10  10  10  10  10  10  10  10  10
+  10  10  10  10  10  10  10  10  10  10  10  10  10  10  10  10
+10  10  10  10  10  10  10  10  10  10  10  10  10  10  10  10  10
+  10  10  10  10  10  10  10  10  10  10  10  10  10  10  10  10
+    10  10  10  10  10  10  10  10  10  10  10  10  10  10  10
+      10  10  10  10  10  10  10  10  10  10  10  10  10  10
+        10  10  10  10  10  10  10  10  10  10  10  10  10
+          10  10  10  10  10  10  10  10  10  10  10  10
+            10  10  10  10  10  10  10  10  10  10  10
+              10  10  10  10  10  10  10  10  10  10
+                10  10  10  10  10  10  10  10  10</universes>
+  </hex_lattice>
+  <hex_lattice id="27" n_rings="5" name="core">
+    <pitch>20.5</pitch>
+    <outer>11</outer>
+    <center>0.0 0.0</center>
+    <universes>
+        26
+      26  26
+    26  22  26
+  26  24  24  26
+26  24  20  24  26
+  22  18  18  22
+26  20  16  20  26
+  24  14  14  24
+26  18  14  18  26
+  24  16  16  24
+26  20  14  20  26
+  22  18  18  22
+26  24  20  24  26
+  26  24  24  26
+    26  22  26
+      26  26
+        26</universes>
+  </hex_lattice>
+  <surface coeffs="0.0 0.0 0.535" id="1" type="z-cylinder"/>
+  <surface coeffs="0.0 0.0 0.55" id="2" type="z-cylinder"/>
+  <surface coeffs="0.0 0.0 0.6" id="3" type="z-cylinder"/>
+  <surface coeffs="90" id="4" type="z-plane"/>
+  <surface coeffs="149.5" id="5" type="z-plane"/>
+  <surface coeffs="180" id="6" type="z-plane"/>
+  <surface coeffs="185.05" id="7" type="z-plane"/>
+  <surface coeffs="0" id="8" type="z-plane"/>
+  <surface coeffs="-22.5" id="9" type="z-plane"/>
+  <surface coeffs="-27" id="10" type="z-plane"/>
+  <surface coeffs="0.0 0.0 2.0" id="11" type="z-cylinder"/>
+  <surface coeffs="0.0 0.0 2.2" id="12" type="z-cylinder"/>
+  <surface coeffs="31" id="13" type="z-plane"/>
+  <surface coeffs="123" id="14" type="z-plane"/>
+  <surface coeffs="-61" id="15" type="z-plane"/>
+  <surface coeffs="0.0 0.0 2.0" id="36" type="z-cylinder"/>
+  <surface coeffs="0.0 0.0 2.2" id="37" type="z-cylinder"/>
+  <surface coeffs="91" id="38" type="z-plane"/>
+  <surface coeffs="183" id="39" type="z-plane"/>
+  <surface coeffs="-1" id="40" type="z-plane"/>
+  <surface coeffs="10.249999551063404" id="41" type="y-plane"/>
+  <surface coeffs="-10.249999551063404" id="42" type="y-plane"/>
+  <surface coeffs="1.7320508075688772 1.0 0.0 20.499999102126807" id="43" type="plane"/>
+  <surface coeffs="-1.7320508075688772 1.0 0.0 -20.499999102126807" id="44" type="plane"/>
+  <surface coeffs="1.7320508075688772 1.0 0.0 -20.499999102126807" id="45" type="plane"/>
+  <surface coeffs="-1.7320508075688772 1.0 0.0 20.499999102126807" id="46" type="plane"/>
+  <surface coeffs="2.799999993537801" id="47" type="y-plane"/>
+  <surface coeffs="-2.799999993537801" id="48" type="y-plane"/>
+  <surface coeffs="1.7320508075688772 1.0 0.0 5.599999987075602" id="49" type="plane"/>
+  <surface coeffs="-1.7320508075688772 1.0 0.0 -5.599999987075602" id="50" type="plane"/>
+  <surface coeffs="1.7320508075688772 1.0 0.0 -5.599999987075602" id="51" type="plane"/>
+  <surface coeffs="-1.7320508075688772 1.0 0.0 5.599999987075602" id="52" type="plane"/>
+  <surface coeffs="2.6000000001852825" id="53" type="y-plane"/>
+  <surface coeffs="-2.6000000001852825" id="54" type="y-plane"/>
+  <surface coeffs="1.7320508075688772 1.0 0.0 5.200000000370565" id="55" type="plane"/>
+  <surface coeffs="-1.7320508075688772 1.0 0.0 -5.200000000370565" id="56" type="plane"/>
+  <surface coeffs="1.7320508075688772 1.0 0.0 -5.200000000370565" id="57" type="plane"/>
+  <surface coeffs="-1.7320508075688772 1.0 0.0 5.200000000370565" id="58" type="plane"/>
+  <surface boundary="vacuum" coeffs="0.0 0.0 125" id="59" type="z-cylinder"/>
+  <surface boundary="vacuum" coeffs="200" id="60" type="z-plane"/>
+  <surface boundary="vacuum" coeffs="-50" id="61" type="z-plane"/>
+</geometry>

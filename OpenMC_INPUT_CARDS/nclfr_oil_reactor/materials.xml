@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='utf-8'?>
+<materials>
+  <material depletable="true" id="1" name="inner UO2" temperature="900.0" volume="112166.502046326">
+    <density units="atom/b-cm" value="0.0698029"/>
+    <nuclide ao="0.0465353" name="O16"/>
+    <nuclide ao="0.00314113" name="U235"/>
+    <nuclide ao="0.0201265" name="U238"/>
+  </material>
+  <material depletable="true" id="2" name="middle UO2" temperature="900.0" volume="192285.432079416">
+    <density units="atom/b-cm" value="0.0698262"/>
+    <nuclide ao="0.0465508" name="O16"/>
+    <nuclide ao="0.00384044" name="U235"/>
+    <nuclide ao="0.019435" name="U238"/>
+  </material>
+  <material depletable="true" id="3" name="outer UO2" temperature="900.0" volume="288428.148119124">
+    <density units="atom/b-cm" value="0.0698418"/>
+    <nuclide ao="0.0465612" name="O16"/>
+    <nuclide ao="0.00430691" name="U235"/>
+    <nuclide ao="0.0189737" name="U238"/>
+  </material>
+  <material id="4" name="helium" temperature="293.6">
+    <density units="atom/b-cm" value="2.4724e-05"/>
+    <nuclide ao="4.9448e-11" name="He3"/>
+    <nuclide ao="2.4723950552e-05" name="He4"/>
+  </material>
+  <material id="5" name="T91 steel" temperature="600">
+    <density units="atom/b-cm" value="0.0846611"/>
+    <nuclide ao="0.000384690658" name="C12"/>
+    <nuclide ao="4.309342e-06" name="C13"/>
+    <nuclide ao="0.00034190978800000005" name="Cr50"/>
+    <nuclide ao="0.006593389925600001" name="Cr52"/>
+    <nuclide ao="0.0007476374904" name="Cr53"/>
+    <nuclide ao="0.00018610279600000002" name="Cr54"/>
+    <nuclide ao="0.000108569720889" name="Ni58"/>
+    <nuclide ao="4.1820862110999996e-05" name="Ni60"/>
+    <nuclide ao="1.8179239189999998e-06" name="Ni61"/>
+    <nuclide ao="5.796336945e-06" name="Ni62"/>
+    <nuclide ao="1.476156136e-06" name="Ni64"/>
+    <nuclide ao="0.000383" name="Mn55"/>
+    <nuclide ao="6.7780923e-05" name="Mo92"/>
+    <nuclide ao="4.2508249e-05" name="Mo94"/>
+    <nuclide ao="7.3444371e-05" name="Mo95"/>
+    <nuclide ao="7.7145971e-05" name="Mo96"/>
+    <nuclide ao="4.4335914e-05" name="Mo97"/>
+    <nuclide ao="0.00011239908400000001" name="Mo98"/>
+    <nuclide ao="4.5085488e-05" name="Mo100"/>
+    <nuclide ao="0.0005363727716016" name="Si28"/>
+    <nuclide ao="2.72354789592e-05" name="Si29"/>
+    <nuclide ao="1.7953749439199998e-05" name="Si30"/>
+    <nuclide ao="4.02e-05" name="Nb93"/>
+    <nuclide ao="3.02e-05" name="P31"/>
+    <nuclide ao="0.00016595985409" name="N14"/>
+    <nuclide ao="6.1014591e-07" name="N15"/>
+    <nuclide ao="7.2671173796699996e-06" name="O16"/>
+    <nuclide ao="2.7608065500000002e-09" name="O17"/>
+    <nuclide ao="1.4571813779999999e-08" name="O18"/>
+    <nuclide ao="5.08944e-05" name="Cu63"/>
+    <nuclide ao="2.2705599999999998e-05" name="Cu65"/>
+    <nuclide ao="4.925075e-07" name="V50"/>
+    <nuclide ao="0.0001965104925" name="V51"/>
+    <nuclide ao="6.93e-05" name="Al27"/>
+    <nuclide ao="0.00433887209" name="Fe54"/>
+    <nuclide ao="0.068111012788" name="Fe56"/>
+    <nuclide ao="0.001572980318" name="Fe57"/>
+    <nuclide ao="0.000209334804" name="Fe58"/>
+  </material>
+  <material id="6" name="YZrO reflector" temperature="600">
+    <density units="atom/b-cm" value="0.087538"/>
+    <nuclide ao="0.05796175686" name="O16"/>
+    <nuclide ao="2.20199e-05" name="O17"/>
+    <nuclide ao="0.00011622323999999999" name="O18"/>
+    <nuclide ao="0.0143071131" name="Zr90"/>
+    <nuclide ao="0.00312003516" name="Zr91"/>
+    <nuclide ao="0.0047690377" name="Zr92"/>
+    <nuclide ao="0.0048329956400000006" name="Zr94"/>
+    <nuclide ao="0.0007786184" name="Zr96"/>
+    <nuclide ao="0.00163" name="Y89"/>
+  </material>
+  <material id="7" name="Pb-Bi coolant" temperature="600">
+    <density units="atom/b-cm" value="0.029784"/>
+    <nuclide ao="0.00018433660000000002" name="Pb204"/>
+    <nuclide ao="0.0031732229" name="Pb206"/>
+    <nuclide ao="0.0029098849" name="Pb207"/>
+    <nuclide ao="0.006899455600000001" name="Pb208"/>
+    <nuclide ao="0.016617" name="Bi209"/>
+  </material>
+  <material id="8" name="cr_40pct_B4C" temperature="600">
+    <density units="atom/b-cm" value="0.0995956"/>
+    <nuclide ao="0.0318706" name="B10"/>
+    <nuclide ao="0.0478059" name="B11"/>
+    <nuclide ao="0.0199191" name="C12"/>
+  </material>
+  <material id="9" name="cr_60pct_B4C" temperature="600">
+    <density units="atom/b-cm" value="0.101082"/>
+    <nuclide ao="0.0485194" name="B10"/>
+    <nuclide ao="0.0323463" name="B11"/>
+    <nuclide ao="0.0202164" name="C12"/>
+  </material>
+  <material id="10" name="sr85_B4C" temperature="600">
+    <density units="atom/b-cm" value="0.103397"/>
+    <nuclide ao="0.0744458" name="B10"/>
+    <nuclide ao="0.00827176" name="B11"/>
+    <nuclide ao="0.0206794" name="C12"/>
+  </material>
+</materials>

@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<tallies>
+  <filter id="1" type="distribcell">
+    <bins>58</bins>
+  </filter>
+  <filter id="2" type="distribcell">
+    <bins>62</bins>
+  </filter>
+  <filter id="3" type="distribcell">
+    <bins>66</bins>
+  </filter>
+  <filter id="4" type="distribcell">
+    <bins>70</bins>
+  </filter>
+  <filter id="5" type="distribcell">
+    <bins>74</bins>
+  </filter>
+  <filter id="6" type="distribcell">
+    <bins>78</bins>
+  </filter>
+  <filter id="7" type="distribcell">
+    <bins>1</bins>
+  </filter>
+  <filter id="8" type="distribcell">
+    <bins>10</bins>
+  </filter>
+  <filter id="9" type="distribcell">
+    <bins>19</bins>
+  </filter>
+  <filter id="10" type="cell">
+    <bins>82</bins>
+  </filter>
+  <filter id="11" type="energy">
+    <bins>0.0 100000000.0</bins>
+  </filter>
+  <tally id="1">
+    <filters>1</filters>
+    <scores>heating fission-q-recoverable fission-q-prompt</scores>
+  </tally>
+  <tally id="2">
+    <filters>2</filters>
+    <scores>heating fission-q-recoverable fission-q-prompt</scores>
+  </tally>
+  <tally id="3">
+    <filters>3</filters>
+    <scores>heating fission-q-recoverable fission-q-prompt</scores>
+  </tally>
+  <tally id="4">
+    <filters>4</filters>
+    <scores>heating fission-q-recoverable fission-q-prompt</scores>
+  </tally>
+  <tally id="5">
+    <filters>5</filters>
+    <scores>heating fission-q-recoverable fission-q-prompt</scores>
+  </tally>
+  <tally id="6">
+    <filters>6</filters>
+    <scores>heating fission-q-recoverable fission-q-prompt</scores>
+  </tally>
+  <tally id="7">
+    <filters>7</filters>
+    <scores>heating fission-q-recoverable fission-q-prompt</scores>
+  </tally>
+  <tally id="8">
+    <filters>8</filters>
+    <scores>heating fission-q-recoverable fission-q-prompt</scores>
+  </tally>
+  <tally id="9">
+    <filters>9</filters>
+    <scores>heating fission-q-recoverable fission-q-prompt</scores>
+  </tally>
+  <tally id="10">
+    <filters>10 11</filters>
+    <nuclides>total</nuclides>
+    <scores>nu-fission</scores>
+    <estimator>tracklength</estimator>
+  </tally>
+  <tally id="11">
+    <filters>10 11</filters>
+    <nuclides>total</nuclides>
+    <scores>delayed-nu-fission</scores>
+    <estimator>tracklength</estimator>
+  </tally>
+</tallies>

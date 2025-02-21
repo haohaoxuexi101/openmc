@@ -20,7 +20,8 @@ set(SOURCE_FILES
 # 遍历源文件列表，生成多个可执行文件
 foreach(file ${SOURCE_FILES})
   add_executable(${file} ${file}.cpp)
-  target_link_libraries(${file} PRIVATE openmc ${HDF5_LIBRARIES})
+  # target_link_libraries(${file} PRIVATE openmc ${HDF5_LIBRARIES})
+  target_link_libraries(${file} PRIVATE /home/ssn/ssn_mc/openmc/build/lib/libopenmc.so ${HDF5_LIBRARIES})
 endforeach()
 
 # 指定包含目录，以便找到 HDF5 和 OpenMC 的头文件
