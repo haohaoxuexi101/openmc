@@ -1,0 +1,4 @@
+# 所有文件在目录下
+g++ geometry.cpp model.cpp -o main && ./main
+# 有include和src文件夹
+g++ -I./include src/geometry.cpp src/model.cpp -o main && ./main
