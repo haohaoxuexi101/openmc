@@ -16,6 +16,9 @@ openmc.egg-info/
 # Inputs generated from Python API
 examples/**/*.xml
 
+# neutronics-workshop examples
+neutronics-workshop-main/
+
 # emacs and vim backups
 *~
 *.swp
