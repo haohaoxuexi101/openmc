@@ -15,11 +15,16 @@ int main()
 
   test_vector.clear();
   test_vector.reserve(1);
+  test_vector.emplace_back(1);
   test_vector.push_back(1);
   test_vector.push_back(2);
   test_vector.push_back(3);
   test_vector.push_back(4);
   test_vector.erase(test_vector.begin() + 1);
+
+  // insert a range of number using insert method
+  test_vector.insert(test_vector.begin() + 1, {5, 6, 7, 8});
+  test_vector.erase(test_vector.begin() + 1, test_vector.begin() + 3);
 
   std::cout << "the end: " << test_vector.back() << std::endl;
   std::cout << "the begin: " << test_vector.front() << std::endl;
@@ -29,5 +34,6 @@ int main()
     std::cout << element << " ";
   }
   std::cout << std::endl;
+  std::cout << test_vector[0] << std::endl;
   return 0;
 }

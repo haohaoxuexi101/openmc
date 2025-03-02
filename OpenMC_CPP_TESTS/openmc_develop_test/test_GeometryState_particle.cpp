@@ -18,6 +18,7 @@
 #include "openmc/nuclide.h"
 #include "openmc/output.h"
 #include "openmc/particle.h"
+// #include "openmc/particle_data.h"
 #include "openmc/photon.h"
 #include "openmc/random_lcg.h"
 #include "openmc/settings.h"
@@ -34,7 +35,11 @@
 
 int main()
 {
-  openmc::model::n_coord_levels = 2;
+  // openmc::model::n_coord_levels = 2;
+  // 如果需要完整的初始化变量，那么就要使用openmc::read_separate_xml_files()
+  // 或者将其中的函数抽离出来，单独调用
+  // 但是单独定义变量是不行的
+  // 材料几何截面参数无法独立存在？
   openmc::settings::path_input = std::string(
     "/home/ssn/ssn_mc/openmc/OpenMC_CPP_TESTS/openmc_develop_test/");
 
@@ -66,14 +71,14 @@ int main()
   // eigenvalue模式下，从source_bank中取出一个粒子
   // 为什么需要read_settings_xml()？
   // 必须read并且finalize，否则有问题？
-  // openmc::read_separate_xml_files();
-  openmc::read_settings_xml();
-  openmc::read_cross_sections_xml();
-  openmc::read_materials_xml();
-  openmc::read_geometry_xml();
+  openmc::read_separate_xml_files();
+  // openmc::read_settings_xml();
+  // openmc::read_cross_sections_xml();
+  // openmc::read_materials_xml();
+  // openmc::read_geometry_xml();
 
-  openmc::finalize_geometry();
-  openmc::finalize_cross_sections();
+  // openmc::finalize_geometry();
+  // openmc::finalize_cross_sections();
 
   openmc_simulation_init();
 
@@ -87,8 +92,28 @@ int main()
 
   // p.from_source(&openmc::simulation::source_bank[0]);
 
-  double xyz[3];
-  p.get_xyz(xyz);
+  // double xyz[3];
+  // p.get_xyz(xyz);
+  std::cout << p.r().x << " " << p.r().y << " " << p.r().z << std::endl;
+
+  // bool ifoverlap = openmc::check_cell_overlap(p, true);
+  // if (ifoverlap) {
+  //   std::cout << "overlap" << std::endl;
+  // } else {
+  //   std::cout << "not overlap" << std::endl;
+  // }
+  bool foundif = openmc::exhaustive_find_cell(p);
+  if (!foundif) {
+    std::cout << "not found" << std::endl;
+  } else {
+    std::cout << "found" << std::endl;
+  }
+
+  openmc::BoundaryInfo bd;
+
+  bd = openmc::distance_to_boundary(p);
+
+  std::cout << bd.distance << std::endl;
 
   return 0;
 }
