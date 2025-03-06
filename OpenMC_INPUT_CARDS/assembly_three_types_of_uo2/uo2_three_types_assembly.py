@@ -37,7 +37,7 @@ ss304.temperature = 560
 ss304.set_density('g/cc', 6.6)
 ss304.add_element('Zr', 1.0)
 
-borated_water = openmc.model.borated_water(680.916772554002,temperature=594.14,temp_unit='K',density=0.6775)
+borated_water = openmc.model.borated_water(680.916772554002,temperature=594.14,temp_unit='K',density=0.6775, name = "water")
 borated_water.temperature=594.14
 borated_water.add_s_alpha_beta('c_H_in_H2O')
 
@@ -64,35 +64,35 @@ gt_or = openmc.ZCylinder(r=0.6121, name='guide tube OR')
 
 # Define uo2 cells
 fuel = openmc.Cell(fill=uo2, region=-fuel_or, name = 'UO2 fuel1 cell')
-gap = openmc.Cell(fill=helium, region=+fuel_or & -clad_ir)
-clad = openmc.Cell(fill=ss304, region=+clad_ir & -clad_or)
-water = openmc.Cell(fill=borated_water, region=+clad_or)
+gap = openmc.Cell(fill=helium, region=+fuel_or & -clad_ir, name = "gap1")
+clad = openmc.Cell(fill=ss304, region=+clad_ir & -clad_or, name = "clad1")
+water = openmc.Cell(fill=borated_water, region=+clad_or, name = "coolant1")
 
 # Define uo2 cells
 fuel1 = openmc.Cell(fill=xuo2, region=-fuel_or, name = 'UO2 fuel2 cell')
-gap1 = openmc.Cell(fill=helium, region=+fuel_or & -clad_ir)
-clad1 = openmc.Cell(fill=ss304, region=+clad_ir & -clad_or)
-water1 = openmc.Cell(fill=borated_water, region=+clad_or)
+gap1 = openmc.Cell(fill=helium, region=+fuel_or & -clad_ir, name = "gap2")
+clad1 = openmc.Cell(fill=ss304, region=+clad_ir & -clad_or, name = "clad2")
+water1 = openmc.Cell(fill=borated_water, region=+clad_or, name = "coolant2")
 
 # Define uo2 cells
 fuel2 = openmc.Cell(fill=yuo2, region=-fuel_or, name = 'UO2 fuel3 cell')
-gap2 = openmc.Cell(fill=helium, region=+fuel_or & -clad_ir)
-clad2 = openmc.Cell(fill=ss304, region=+clad_ir & -clad_or)
-water2 = openmc.Cell(fill=borated_water, region=+clad_or)
+gap2 = openmc.Cell(fill=helium, region=+fuel_or & -clad_ir, name = "gap3")
+clad2 = openmc.Cell(fill=ss304, region=+clad_ir & -clad_or, name = "clad3")
+water2 = openmc.Cell(fill=borated_water, region=+clad_or, name = "coolant3")
 
 
 materials = openmc.Materials([uo2, xuo2, yuo2, helium, ss304, borated_water])
 materials.export_to_xml()
 
-gd_o_gap = openmc.Cell(fill=helium, region=+fuel_or & -clad_ir)
-gd_o_clad = openmc.Cell(fill=ss304, region=+clad_ir & -clad_or)
-gd_o_water = openmc.Cell(fill=borated_water, region=+clad_or)
+# gd_o_gap = openmc.Cell(fill=helium, region=+fuel_or & -clad_ir)
+# gd_o_clad = openmc.Cell(fill=ss304, region=+clad_ir & -clad_or)
+# gd_o_water = openmc.Cell(fill=borated_water, region=+clad_or)
 
 
 # Define pin universe
-uo2_universe = openmc.Universe(cells=[fuel, gap, clad, water])
-xuo2_universe = openmc.Universe(cells=[fuel1, gap1, clad1, water1])
-yuo2_universe = openmc.Universe(cells=[fuel2, gap2, clad2, water2])
+uo2_universe = openmc.Universe(cells=[fuel, gap, clad, water], name = "uo2_universe")
+xuo2_universe = openmc.Universe(cells=[fuel1, gap1, clad1, water1], name = "xuo2_universe")
+yuo2_universe = openmc.Universe(cells=[fuel2, gap2, clad2, water2], name = "yuo2_universe")
 
 
 pin_boundary = openmc.model.RectangularPrism(pin_pitch, pin_pitch)
@@ -104,8 +104,8 @@ fuel_lat.center = (0., 0.)
 fuel_lat.pitch = (pin_pitch, pin_pitch)
 fuel_lat.lower_left = [-assembly_pitch/2, -assembly_pitch/2]
 # coolant universe for empty pin space filling
-coolant_cell = openmc.Cell(fill=borated_water)
-coolant_u = openmc.Universe(cells=[coolant_cell])
+coolant_cell = openmc.Cell(fill=borated_water, name = "lattice outer water cell")
+coolant_u = openmc.Universe(cells=[coolant_cell], name = "lattice outer water universe")
 fuel_lat.outer = coolant_u
 
 u0 = uo2_universe
@@ -132,7 +132,7 @@ fuel_lat.universes = [
                         [ux, ux, ux, ux, ux, ux, ux, ux, u0, u0, u0, u0, u0, u0, u0, u0, u0],
                     ]
 
-fuel_lat_cell = openmc.Cell(fill=fuel_lat,region=-assembly_boundary)
+fuel_lat_cell = openmc.Cell(fill=fuel_lat,region=-assembly_boundary, name = "fuel lattice")
 
 geometry = openmc.Geometry([fuel_lat_cell])
 geometry.export_to_xml()

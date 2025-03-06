@@ -51,6 +51,7 @@ private:
 
 class SubA : public AbstractA {
 public:
+  // SubA() = default;
   SubA() { std::cout << "SubA default constructor" << std::endl; }
   SubA(std::string abstract_a_str, int abstract_a_int, std::string sub_a_str,
     int sub_a_int)
@@ -97,6 +98,10 @@ int main()
   // stack allocation
   // 这里初始化是分配在栈上的，所以不需要delete
   SubA obj(abs_a_string, abs_a_integer, sub_a_string, sub_a_integer);
+
+  // 尝试使用默认构造函数，并未体现明确作用？
+  // default constructor
+  // SubA obj;
 
   obj.print();
   obj.print_a();

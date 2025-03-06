@@ -1,19 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <geometry>
   <cell id="1" material="1" name="UO2 fuel1 cell" region="-1" universe="1"/>
-  <cell id="2" material="4" region="1 -2" universe="1"/>
-  <cell id="3" material="5" region="2 -3" universe="1"/>
-  <cell id="4" material="6" region="3" universe="1"/>
+  <cell id="2" material="4" name="gap1" region="1 -2" universe="1"/>
+  <cell id="3" material="5" name="clad1" region="2 -3" universe="1"/>
+  <cell id="4" material="6" name="coolant1" region="3" universe="1"/>
   <cell id="5" material="2" name="UO2 fuel2 cell" region="-1" universe="2"/>
-  <cell id="6" material="4" region="1 -2" universe="2"/>
-  <cell id="7" material="5" region="2 -3" universe="2"/>
-  <cell id="8" material="6" region="3" universe="2"/>
+  <cell id="6" material="4" name="gap2" region="1 -2" universe="2"/>
+  <cell id="7" material="5" name="clad2" region="2 -3" universe="2"/>
+  <cell id="8" material="6" name="coolant2" region="3" universe="2"/>
   <cell id="9" material="3" name="UO2 fuel3 cell" region="-1" universe="3"/>
-  <cell id="10" material="4" region="1 -2" universe="3"/>
-  <cell id="11" material="5" region="2 -3" universe="3"/>
-  <cell id="12" material="6" region="3" universe="3"/>
-  <cell id="16" material="6" universe="5"/>
-  <cell fill="4" id="17" region="10 -11 12 -13" universe="6"/>
+  <cell id="10" material="4" name="gap3" region="1 -2" universe="3"/>
+  <cell id="11" material="5" name="clad3" region="2 -3" universe="3"/>
+  <cell id="12" material="6" name="coolant3" region="3" universe="3"/>
+  <cell id="13" material="6" name="lattice outer water cell" universe="5"/>
+  <cell fill="4" id="14" name="fuel lattice" region="10 -11 12 -13" universe="6"/>
   <lattice id="4" name="sf96_1 assembly">
     <pitch>1.26 1.26</pitch>
     <outer>5</outer>
