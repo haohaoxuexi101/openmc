@@ -210,6 +210,21 @@ bool find_cell_inner(
   return found;
 }
 
+bool exhaustive_find_cell(GeometryState& p, bool verbose)
+{
+  int i_universe = p.lowest_coord().universe;
+  if (i_universe == C_NONE) {
+    p.coord(0).universe = model::root_universe;
+    p.n_coord() = 1;
+    i_universe = model::root_universe;
+  }
+  // Reset all the deeper coordinate levels.
+  for (int i = p.n_coord(); i < model::n_coord_levels; i++) {
+    p.coord(i).reset();
+  }
+  return find_cell_inner(p, nullptr, verbose);
+}
+
 void DeltaParticle::delta_calculate_xs()
 {
   // Set the random number stream
@@ -330,7 +345,7 @@ void DeltaParticle::delta_advance()
 {
 
   // Find the distance to the nearest boundary
-  // boundary() = distance_to_boundary(*this);
+  boundary() = distance_to_boundary(*this);
 
   // Sample a distance to collision
 
@@ -356,7 +371,7 @@ void DeltaParticle::delta_advance()
     coord(j).r += distance * coord(j).u;
   }
 
-  if (find_cell_inner(*this, nullptr, false)) {
+  if (exhaustive_find_cell(*this, false)) {
     std::cout << "find the cell" << std::endl;
   }
 
@@ -478,7 +493,9 @@ int main()
   openmc::settings::path_input = std::string(
     "/home/ssn/ssn_mc/openmc/OpenMC_CPP_TESTS/openmc_develop_test/");
 
-  openmc::read_separate_xml_files();
+  openmc::read_model_xml();
+
+  // openmc::read_separate_xml_files();
 
   openmc_simulation_init();
 

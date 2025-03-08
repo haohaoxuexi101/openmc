@@ -23,8 +23,8 @@
     <cell id="4" material="82" region="4 -5 6" universe="2"/>
     <cell id="5" material="82" region="4 -5 -6" universe="2"/>
     <cell id="6" material="42" region="-4" universe="2"/>
-    <surface coeffs="0.0 0.0 0.0 400" id="4" type="sphere"/>
-    <surface boundary="vacuum" coeffs="0.0 0.0 0.0 600" id="5" type="sphere"/>
+    <surface coeffs="0.0 0.0 0.0 0.4" id="4" type="sphere"/>
+    <surface boundary="vacuum" coeffs="0.0 0.0 0.0 0.6" id="5" type="sphere"/>
     <surface coeffs="0" id="6" type="y-plane"/>
   </geometry>
   <settings>

@@ -43,7 +43,7 @@
     <nuclide ao="0.1738" name="Zr94"/>
     <nuclide ao="0.028" name="Zr96"/>
   </material>
-  <material id="6" temperature="594.14">
+  <material id="6" name="water" temperature="594.14">
     <density units="g/cc" value="0.6779616354487251"/>
     <nuclide ao="1.2482416679682025e-05" name="B10"/>
     <nuclide ao="5.049647675968238e-05" name="B11"/>
