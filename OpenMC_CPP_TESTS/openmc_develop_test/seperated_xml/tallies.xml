@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<tallies>
+  <filter id="1" type="cell">
+    <bins>14</bins>
+  </filter>
+  <filter id="2" type="material">
+    <bins>1 2 3</bins>
+  </filter>
+  <tally id="40000" name="_tally_overall_power">
+    <filters>1</filters>
+    <scores>heating-local fission-q-recoverable fission-q-prompt kappa-fission fission (n,gamma)</scores>
+  </tally>
+  <tally id="1">
+    <filters>2</filters>
+    <scores>heating-local fission-q-recoverable fission-q-prompt kappa-fission fission (n,gamma)</scores>
+  </tally>
+</tallies>

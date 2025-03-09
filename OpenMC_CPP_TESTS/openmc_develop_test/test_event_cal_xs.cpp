@@ -48,6 +48,7 @@ public:
   DeltaParticle() = default;
   void delta_calculate_xs();
   void delta_advance();
+  void delta_cross_surface();
   void delta_collide();
   void get_all_materials();
   std::unordered_map<int, double> macro_xs_t;
@@ -210,19 +211,129 @@ bool find_cell_inner(
   return found;
 }
 
-bool exhaustive_find_cell(GeometryState& p, bool verbose)
+bool delta_exhaustive_find_cell(GeometryState& p, bool verbose)
 {
-  int i_universe = p.lowest_coord().universe;
-  if (i_universe == C_NONE) {
-    p.coord(0).universe = model::root_universe;
-    p.n_coord() = 1;
-    i_universe = model::root_universe;
-  }
+  // auto& coord {p.lowest_coord()};
+  // auto& lat {*model::lattices[coord.lattice]};
+  // // Set the new coordinate position.
+  // const auto& upper_coord {p.coord(p.n_coord() - 2)};
+  // const auto& cell {model::cells[upper_coord.cell]};
+  // Position r = upper_coord.r;
+  // int i_universe = p.lowest_coord().universe;
+  // if (i_universe == C_NONE) {
+  p.coord(0).universe = model::root_universe;
+  p.n_coord() = 1;
+  // p.r_local() = lat.get_local_position(r, coord.lattice_i);
+  int i_universe = model::root_universe;
+  // }
   // Reset all the deeper coordinate levels.
   for (int i = p.n_coord(); i < model::n_coord_levels; i++) {
     p.coord(i).reset();
   }
   return find_cell_inner(p, nullptr, verbose);
+}
+
+void delta_cross_lattice(
+  GeometryState& p, const BoundaryInfo& boundary, bool verbose)
+{
+  auto& coord {p.lowest_coord()};
+  auto& lat {*model::lattices[coord.lattice]};
+
+  if (verbose) {
+    write_message(
+      fmt::format("    Crossing lattice {}. Current position ({},{},{}). r={}",
+        lat.id_, coord.lattice_i[0], coord.lattice_i[1], coord.lattice_i[2],
+        p.r()),
+      1);
+  }
+
+  // Set the lattice indices.
+  coord.lattice_i[0] += boundary.lattice_translation[0];
+  coord.lattice_i[1] += boundary.lattice_translation[1];
+  coord.lattice_i[2] += boundary.lattice_translation[2];
+
+  // Set the new coordinate position.
+  const auto& upper_coord {p.coord(p.n_coord() - 2)};
+  const auto& cell {model::cells[upper_coord.cell]};
+  Position r = upper_coord.r;
+  r -= cell->translation_;
+  if (!cell->rotation_.empty()) {
+    r = r.rotate(cell->rotation_);
+  }
+  p.r_local() = lat.get_local_position(r, coord.lattice_i);
+
+  if (!lat.are_valid_indices(coord.lattice_i)) {
+    // The particle is outside the lattice.  Search for it from the base coords.
+    p.n_coord() = 1;
+    bool found = exhaustive_find_cell(p);
+
+    if (!found) {
+      p.mark_as_lost(fmt::format("Particle {} could not be located after "
+                                 "crossing a boundary of lattice {}",
+        p.id(), lat.id_));
+    }
+
+  } else {
+    // Find cell in next lattice element.
+    p.lowest_coord().universe = lat[coord.lattice_i];
+    bool found = exhaustive_find_cell(p);
+
+    if (!found) {
+      // A particle crossing the corner of a lattice tile may not be found.  In
+      // this case, search for it from the base coords.
+      p.n_coord() = 1;
+      bool found = exhaustive_find_cell(p);
+      if (!found) {
+        p.mark_as_lost(fmt::format("Particle {} could not be located after "
+                                   "crossing a boundary of lattice {}",
+          p.id(), lat.id_));
+      }
+    }
+  }
+}
+
+void DeltaParticle::delta_cross_surface()
+{
+  // Saving previous cell data
+  for (int j = 0; j < n_coord(); ++j) {
+    cell_last(j) = coord(j).cell;
+  }
+  n_coord_last() = n_coord();
+
+  // Set surface that particle is on and adjust coordinate levels
+  surface() = boundary().surface;
+  n_coord() = boundary().coord_level;
+
+  if (boundary().lattice_translation[0] != 0 ||
+      boundary().lattice_translation[1] != 0 ||
+      boundary().lattice_translation[2] != 0) {
+    // Particle crosses lattice boundary
+
+    bool verbose = settings::verbosity >= 10 || trace();
+    delta_cross_lattice(*this, boundary(), verbose);
+    event() = TallyEvent::LATTICE;
+  } else {
+    // Particle crosses surface
+    // TODO: off-by-one
+    const auto& surf {model::surfaces[surface_index()].get()};
+    // If BC, add particle to surface source before crossing surface
+    if (surf->surf_source_ && surf->bc_) {
+      add_surf_source_to_bank(*this, *surf);
+    }
+    this->cross_surface(*surf);
+    // If no BC, add particle to surface source after crossing surface
+    if (surf->surf_source_ && !surf->bc_) {
+      add_surf_source_to_bank(*this, *surf);
+    }
+    if (settings::weight_window_checkpoint_surface) {
+      apply_weight_windows(*this);
+    }
+    event() = TallyEvent::SURFACE;
+  }
+  // Score cell to cell partial currents
+  if (!model::active_surface_tallies.empty()) {
+    score_surface_tally(*this, model::active_surface_tallies);
+  }
 }
 
 void DeltaParticle::delta_calculate_xs()
@@ -345,7 +456,7 @@ void DeltaParticle::delta_advance()
 {
 
   // Find the distance to the nearest boundary
-  boundary() = distance_to_boundary(*this);
+  // boundary() = distance_to_boundary(*this);
 
   // Sample a distance to collision
 
@@ -367,12 +478,20 @@ void DeltaParticle::delta_advance()
   // Advance particle in space and time
   // Short-term solution until the surface source is revised and we can use
   // this->move_distance(distance)
+
+  // Saving previous cell data
+  for (int j = 0; j < n_coord(); ++j) {
+    cell_last(j) = coord(j).cell;
+  }
+  n_coord_last() = n_coord();
+
   for (int j = 0; j < n_coord(); ++j) {
     coord(j).r += distance * coord(j).u;
   }
 
-  if (exhaustive_find_cell(*this, false)) {
-    std::cout << "find the cell" << std::endl;
+  if (delta_exhaustive_find_cell(*this, false)) {
+    int cell_index = coord(n_coord() - 1).cell;
+    std::cout << "find the cell: " << coord(n_coord() - 1).cell << std::endl;
   }
 
   if (this->macro_xs().total >
@@ -493,9 +612,9 @@ int main()
   openmc::settings::path_input = std::string(
     "/home/ssn/ssn_mc/openmc/OpenMC_CPP_TESTS/openmc_develop_test/");
 
-  openmc::read_model_xml();
+  // openmc::read_model_xml();
 
-  // openmc::read_separate_xml_files();
+  openmc::read_separate_xml_files();
 
   openmc_simulation_init();
 
@@ -516,7 +635,9 @@ int main()
   while (p.vir_collision_ == true) {
     // p.delta_calculate_xs();
     p.event_calculate_xs();
+    // p.event_advance();
     p.delta_advance();
+    // p.delta_cross_surface();
     // p.event_cross_surface();
     // event_cross_surface()之后材料截面会变化
   }

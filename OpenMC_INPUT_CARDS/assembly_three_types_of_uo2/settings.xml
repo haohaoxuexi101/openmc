@@ -6,7 +6,7 @@
   <inactive>5</inactive>
   <source particle="neutron" strength="1.0" type="independent">
     <space type="box">
-      <parameters>-10.7 -10.7 -1 10.7 10.7 1</parameters>
+      <parameters>-10.71 -10.71 -1 10.71 10.71 1</parameters>
     </space>
     <constraints>
       <fissionable>true</fissionable>

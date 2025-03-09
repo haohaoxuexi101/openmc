@@ -96,7 +96,11 @@ yuo2_universe = openmc.Universe(cells=[fuel2, gap2, clad2, water2], name = "yuo2
 
 
 pin_boundary = openmc.model.RectangularPrism(pin_pitch, pin_pitch)
-assembly_pitch = 21.4
+assembly_pitch = 21.42
+# assembly_pitch = 21.4
+# 这里如果不更改，会造成组件最右侧的燃料栅元的最右侧边界位置并不是pitch/2，而是pitch/2 - 0.02
+# 问题是为什么最左侧没事？（负值的情况）
+# lattice的设置规则是左下角的位置是lattice的lower_left属性，而不是center属性？
 assembly_boundary = openmc.model.RectangularPrism(assembly_pitch, assembly_pitch, boundary_type='reflective')
 
 fuel_lat = openmc.RectLattice(name="sf96_1 assembly")
@@ -136,7 +140,8 @@ fuel_lat_cell = openmc.Cell(fill=fuel_lat,region=-assembly_boundary, name = "fue
 
 geometry = openmc.Geometry([fuel_lat_cell])
 geometry.export_to_xml()
-# fuel_lat_cell.plot(origin=(0., 0., 0.), pixels=(1500, 1500), color_by='cell')
+fuel_lat_cell.plot(origin=(0., 0., 0.), pixels=(1500, 1500), color_by='cell')
+
 
 SHEM_361 = np.array([
  1.1000E-10, 2.4999E-09, 4.5560E-09, 7.1453E-09, 1.0451E-08, 1.4830E-08, 2.0010E-08, 2.4939E-08, 2.9299E-08, 3.4400E-08, 4.0300E-08, 4.7302E-08,
