@@ -39,7 +39,12 @@ foreach(file ${SOURCES})
 
   # 为目标设置包含目录
   target_include_directories(${target_name} PRIVATE
-    /home/ssn/ssn_mc/openmc/include/openmc  # OpenMC 头文件路径
+    # 由于所有头文件都是openmc/
+    # 因此该路径只取openmc上一层，只到openmc
+    /home/ssn/ssn_mc/openmc/include  # OpenMC 头文件路径
+    # 非常重要，原来此CMakeLists.txt能够成功
+    # 是因为/usr/local/include中含有对应的头文件
+    /home/ssn/ssn_mc/openmc/build/include # 需要 version.h
     ${HDF5_INCLUDE_DIRS}  # HDF5 头文件路径
   )
 endforeach()
