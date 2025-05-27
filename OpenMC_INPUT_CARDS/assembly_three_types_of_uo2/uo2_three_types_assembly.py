@@ -140,7 +140,7 @@ fuel_lat_cell = openmc.Cell(fill=fuel_lat,region=-assembly_boundary, name = "fue
 
 geometry = openmc.Geometry([fuel_lat_cell])
 geometry.export_to_xml()
-fuel_lat_cell.plot(origin=(0., 0., 0.), pixels=(1500, 1500), color_by='cell')
+# fuel_lat_cell.plot(origin=(0., 0., 0.), pixels=(1500, 1500), color_by='cell')
 
 
 SHEM_361 = np.array([

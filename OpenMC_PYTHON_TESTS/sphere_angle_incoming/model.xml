@@ -2,35 +2,40 @@
 <model>
   <materials>
     <material id="1">
-      <density units="g/cm3" value="2.45"/>
-      <nuclide ao="0.988922" name="C12"/>
-      <nuclide ao="0.011078" name="C13"/>
+      <density units="kg/m3" value="1.29"/>
+      <nuclide ao="0.6974359" name="N14"/>
+      <nuclide ao="0.0025640999999999997" name="N15"/>
+      <nuclide ao="0.29928617999999996" name="O16"/>
+      <nuclide ao="0.0001137" name="O17"/>
+      <nuclide ao="0.0006001199999999999" name="O18"/>
     </material>
-    <material depletable="true" id="2">
-      <density units="g/cm3" value="10.45"/>
-      <nuclide ao="5.4e-05" name="U234"/>
-      <nuclide ao="0.007204" name="U235"/>
-      <nuclide ao="0.992742" name="U238"/>
+    <material id="2">
+      <density units="kg/m3" value="1.29"/>
+      <nuclide ao="0.6974359" name="N14"/>
+      <nuclide ao="0.0025640999999999997" name="N15"/>
+      <nuclide ao="0.29928617999999996" name="O16"/>
+      <nuclide ao="0.0001137" name="O17"/>
+      <nuclide ao="0.0006001199999999999" name="O18"/>
     </material>
   </materials>
   <geometry>
     <cell id="1" material="2" region="-1" universe="1"/>
     <cell id="2" material="1" region="-3 1" universe="1"/>
-    <surface coeffs="0.0 0.0 0.0 9" id="1" type="sphere"/>
-    <surface boundary="vacuum" coeffs="0.0 0.0 0.0 10" id="3" type="sphere"/>
+    <surface coeffs="0.0 0.0 0.0 300" id="1" type="sphere"/>
+    <surface boundary="vacuum" coeffs="0.0 0.0 0.0 400" id="3" type="sphere"/>
   </geometry>
   <settings>
     <run_mode>fixed source</run_mode>
     <particles>500000</particles>
-    <batches>10</batches>
+    <batches>20</batches>
     <inactive>0</inactive>
     <source particle="neutron" strength="1.0" type="independent">
       <space type="point">
-        <parameters>-10 0 0</parameters>
+        <parameters>-400 0 0</parameters>
       </space>
       <angle reference_uvw="1.0 0.0 0.0" type="mu-phi">
-        <mu parameters="0.4 1.0" type="uniform"/>
-        <phi parameters="0 1.5707963267948966" type="uniform"/>
+        <mu parameters="0.7 1.0" type="uniform"/>
+        <phi parameters="0.0 6.283185307179586" type="uniform"/>
       </angle>
       <energy type="discrete">
         <parameters>10000.0 1.0</parameters>
@@ -45,8 +50,8 @@
   <tallies>
     <mesh id="2">
       <dimension>40 40 1</dimension>
-      <lower_left>-10.0 -10.0 -10.0</lower_left>
-      <upper_right>10.0 10.0 10.0</upper_right>
+      <lower_left>-400.0 -400.0 -400.0</lower_left>
+      <upper_right>400.0 400.0 400.0</upper_right>
     </mesh>
     <filter id="1" type="mesh">
       <bins>2</bins>

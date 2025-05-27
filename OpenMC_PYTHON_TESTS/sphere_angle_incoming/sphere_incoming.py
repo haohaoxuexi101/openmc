@@ -6,18 +6,20 @@ from openmc_regular_mesh_plotter import plot_mesh_tally
 
 # MATERIALS
 mat_1 = openmc.Material()
-mat_1.add_element("C", 1)
-mat_1.set_density("g/cm3", 2.45)
+mat_1.add_element("N", 0.7)
+mat_1.add_element("O", 0.3)
+mat_1.set_density("kg/m3", 1.29)
 
 mat_2 = openmc.Material()
-mat_2.add_element("U", 1)
-mat_2.set_density("g/cm3", 10.45)
+mat_2.add_element("N", 0.7)
+mat_2.add_element("O", 0.3)
+mat_2.set_density("kg/m3", 1.29)
 my_materials = openmc.Materials([mat_1, mat_2])
 
 # GEOMETRY
 # surfaces
-inner_surface = openmc.Sphere(r=9)
-outer_surface = openmc.Sphere(r=10, boundary_type="vacuum", surface_id = 3)
+inner_surface = openmc.Sphere(r=300)
+outer_surface = openmc.Sphere(r=400, boundary_type="vacuum", surface_id = 3)
 # regions
 inner_region = -inner_surface
 outer_region = -outer_surface & +inner_surface
@@ -30,9 +32,10 @@ my_geometry = openmc.Geometry([inner_cell, outer_cell])
 
 # SIMULATION SETTINGS
 my_settings = openmc.Settings()
-my_settings.batches = 10
+my_settings.batches = 20
 my_settings.inactive = 0
 my_settings.particles = 500000
+# my_settings.photon_transport = True
 my_settings.run_mode = "fixed source"
 my_settings.create_fission_neutrons = False
 # Create a DT point source
@@ -41,13 +44,14 @@ try:
 except:
     # work with older versions of openmc
     source = openmc.Source()
-source.space = openmc.stats.Point((-10, 0, 0))
+source.space = openmc.stats.Point((-400, 0, 0))
 # source.angle = openmc.stats.Isotropic()
-phi = openmc.stats.Uniform(0, pi/2)
-mu = openmc.stats.Uniform(0.4, 1.0)
+phi = openmc.stats.Uniform(0.0*pi, 2.0*pi)
+mu = openmc.stats.Uniform(0.7, 1.0)
 angle = openmc.stats.PolarAzimuthal(mu=mu, phi=phi, reference_uvw=(1.0, 0.0, 0.0))
 source.angle = angle
 source.energy = openmc.stats.Discrete([1e4], [1])
+source.particle = "neutron"
 my_settings.source = source
 
 my_settings.surf_source_write = {
@@ -89,7 +93,7 @@ scaling_factor = neutrons_per_second * eV_to_joules * joules_to_mega_joules
 plot = plot_mesh_tally(
     basis="xy",  # as the mesh dimention is [1,40,40] only the yz basis can be plotted
     tally=my_mesh_tally,
-    outline=True,  # enables an outline around the geometry
+    # outline=True,  # enables an outline around the geometry
     geometry=my_geometry,  # needed for outline
     norm=LogNorm(),  # log scale
     colorbar=False,

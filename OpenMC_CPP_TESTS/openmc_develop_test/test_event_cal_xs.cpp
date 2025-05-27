@@ -33,7 +33,8 @@
 #include "openmc/weight_windows.h"
 // #include "openmc/xml_interface.h"
 
-#include "lattice.h"
+// 这里原来没有openmc/
+#include "openmc/lattice.h"
 #include "openmc/physics.h"
 #include "openmc/physics_mg.h"
 #include "openmc/tallies/tally_scoring.h"
@@ -43,6 +44,16 @@
 #include "openmc/mgxs_interface.h"
 
 namespace openmc {
+
+namespace model {
+
+int root_universe {-1};
+int n_coord_levels;
+
+vector<int64_t> overlap_check_count;
+
+} // namespace model
+
 class DeltaParticle : public openmc::Particle {
 public:
   DeltaParticle() = default;
@@ -61,41 +72,51 @@ public:
   MacroXS max_macro_xs_;
 };
 
-bool find_cell_inner(
+//==============================================================================
+
+int cell_instance_at_level(const GeometryState& p, int level)
+{
+  // throw error if the requested level is too deep for the geometry
+  if (level > model::n_coord_levels) {
+    fatal_error(fmt::format("Cell instance at level {} requested, but only {} "
+                            "levels exist in the geometry.",
+      level, p.n_coord()));
+  }
+
+  // determine the cell instance
+  Cell& c {*model::cells[p.coord(level).cell]};
+
+  // quick exit if this cell doesn't have distribcell instances
+  if (c.distribcell_index_ == C_NONE)
+    return C_NONE;
+
+  // compute the cell's instance
+  int instance = 0;
+  for (int i = 0; i < level; i++) {
+    const auto& c_i {*model::cells[p.coord(i).cell]};
+    if (c_i.type_ == Fill::UNIVERSE) {
+      instance += c_i.offset_[c.distribcell_index_];
+    } else if (c_i.type_ == Fill::LATTICE) {
+      instance += c_i.offset_[c.distribcell_index_];
+      auto& lat {*model::lattices[p.coord(i + 1).lattice]};
+      const auto& i_xyz {p.coord(i + 1).lattice_i};
+      if (lat.are_valid_indices(i_xyz)) {
+        instance += lat.offset(c.distribcell_index_, i_xyz);
+      }
+    }
+  }
+  return instance;
+}
+
+//==============================================================================
+
+bool delta_find_cell_inner(
   GeometryState& p, const NeighborList* neighbor_list, bool verbose)
 {
   // Find which cell of this universe the particle is in.  Use the neighbor list
   // to shorten the search if one was provided.
   bool found = false;
   int32_t i_cell = C_NONE;
-  if (neighbor_list) {
-    for (auto it = neighbor_list->cbegin(); it != neighbor_list->cend(); ++it) {
-      i_cell = *it;
-
-      // Make sure the search cell is in the same universe.
-      int i_universe = p.lowest_coord().universe;
-      if (model::cells[i_cell]->universe_ != i_universe)
-        continue;
-
-      // Check if this cell contains the particle.
-      Position r {p.r_local()};
-      Direction u {p.u_local()};
-      auto surf = p.surface();
-      if (model::cells[i_cell]->contains(r, u, surf)) {
-        p.lowest_coord().cell = i_cell;
-        found = true;
-        break;
-      }
-    }
-
-    // If we're attempting a neighbor list search and fail, we
-    // now know we should return false. This will trigger an
-    // exhaustive search from neighbor_list_find_cell and make
-    // the result from that be appended to the neighbor list.
-    if (!found) {
-      return found;
-    }
-  }
 
   // Check successively lower coordinate levels until finding material fill
   for (;; ++p.n_coord()) {
@@ -221,16 +242,17 @@ bool delta_exhaustive_find_cell(GeometryState& p, bool verbose)
   // Position r = upper_coord.r;
   // int i_universe = p.lowest_coord().universe;
   // if (i_universe == C_NONE) {
-  p.coord(0).universe = model::root_universe;
+  // p.coord(0).universe = model::root_universe;
   p.n_coord() = 1;
+  // model::n_coord_levels = 2;
   // p.r_local() = lat.get_local_position(r, coord.lattice_i);
-  int i_universe = model::root_universe;
+  // int i_universe = model::root_universe;
   // }
   // Reset all the deeper coordinate levels.
   for (int i = p.n_coord(); i < model::n_coord_levels; i++) {
     p.coord(i).reset();
   }
-  return find_cell_inner(p, nullptr, verbose);
+  return delta_find_cell_inner(p, nullptr, verbose);
 }
 
 void delta_cross_lattice(
@@ -391,37 +413,20 @@ void DeltaParticle::delta_calculate_xs()
     for (auto i_mat : c->material_) {
       if (i_mat != MATERIAL_VOID) {
         const auto& mat {model::materials[i_mat]};
-        std::cout << "the material id: " << mat->id_ << std::endl;
+        // std::cout << "the material id: " << mat->id_ << std::endl;
         model::materials[i_mat]->calculate_xs(*this);
-        std::cout << "attempt to calculate the xs" << std::endl;
-        std::cout << "the total xs: " << this->macro_xs().total << std::endl;
-        std::cout
-          << "----------------------------------------------------------------"
-          << std::endl;
+        // std::cout << "attempt to calculate the xs" << std::endl;
+        // std::cout << "the total xs: " << this->macro_xs().total << std::endl;
+        // std::cout
+        //   <<
+        //   "----------------------------------------------------------------"
+        //   << std::endl;
 
         // using an unordered map to store the total macroscopic xs with the
         // cell id
         this->macro_xs_t[c->id_] = this->macro_xs().total;
       }
     }
-  }
-
-  if (lowest_coord().cell == C_NONE) {
-    if (!exhaustive_find_cell(*this)) {
-      mark_as_lost(
-        "Could not find the cell containing particle " + std::to_string(id()));
-      return;
-    }
-
-    // Set birth cell attribute
-    if (cell_born() == C_NONE)
-      cell_born() = lowest_coord().cell;
-
-    // Initialize last cells from current cell
-    for (int j = 0; j < n_coord(); ++j) {
-      cell_last(j) = coord(j).cell;
-    }
-    n_coord_last() = n_coord();
   }
 
   if (material() != MATERIAL_VOID) {
@@ -445,7 +450,9 @@ void DeltaParticle::delta_calculate_xs()
     }
   }
 
-  this->max_macro_xs().total = max_sigma_t;
+  // 暂时用一个极大截面作为最大截面（30倍真实最大截面）
+  // 观察虚拟碰撞过程
+  this->max_macro_xs().total = max_sigma_t * 10;
   std::cout << "the max total macroscopic xs: " << max_sigma_t << std::endl;
   // std::cout << "the cell id with the max total macroscopic xs: " <<
   // max_cell_id
@@ -460,7 +467,7 @@ void DeltaParticle::delta_advance()
 
   // Sample a distance to collision
 
-  max_macro_xs().total = 10;
+  // max_macro_xs().total = 10;
 
   if (type() == ParticleType::electron || type() == ParticleType::positron) {
     collision_distance() = 0.0;
@@ -612,36 +619,81 @@ int main()
   openmc::settings::path_input = std::string(
     "/home/ssn/ssn_mc/openmc/OpenMC_CPP_TESTS/openmc_develop_test/");
 
-  // openmc::read_model_xml();
-
   openmc::read_separate_xml_files();
 
   openmc_simulation_init();
 
-  // // 局部类必须内联定义！！！
-  // class DeltaParticle : public openmc::Particle {
-  // public:
-  //   void delta_calculate_xs()
-  //   {
-  //     std::cout << "DeltaParticle::delta_calculate_xs()" << std::endl;
-  //   }
-  // };
-
   openmc::DeltaParticle p;
 
-  openmc::initialize_history(p, 1);
+  openmc::initialize_history(p, 10);
 
-  // p.get_all_materials();
   while (p.vir_collision_ == true) {
-    // p.delta_calculate_xs();
-    p.event_calculate_xs();
-    // p.event_advance();
+    p.delta_calculate_xs();
     p.delta_advance();
-    // p.delta_cross_surface();
-    // p.event_cross_surface();
-    // event_cross_surface()之后材料截面会变化
   }
-  //   std::cout << p.r().x << std::endl;
+
+  std::cout << "the n_coord_levels is: " << openmc::model::n_coord_levels
+            << std::endl;
 
   return 0;
 }
+// int main()
+// {
+
+//   openmc::settings::path_input = std::string(
+//     "/home/ssn/ssn_mc/openmc/OpenMC_CPP_TESTS/openmc_develop_test/");
+
+//   // openmc::read_model_xml();
+
+//   // openmc::read_separate_xml_files();
+//   openmc::read_settings_xml();
+//   openmc::read_cross_sections_xml();
+
+//   openmc::read_materials_xml();
+//   openmc::read_geometry_xml();
+
+//   // Final geometry setup and assign temperatures
+//   openmc::finalize_geometry();
+
+//   // Finalize cross sections having assigned temperatures
+//   openmc::finalize_cross_sections();
+//   openmc::read_tallies_xml();
+
+//   // Initialize distribcell_filters
+//   openmc::prepare_distribcell();
+
+//   openmc::finalize_variance_reduction();
+
+//   openmc_simulation_init();
+
+//   // // 局部类必须内联定义！！！
+//   // class DeltaParticle : public openmc::Particle {
+//   // public:
+//   //   void delta_calculate_xs()
+//   //   {
+//   //     std::cout << "DeltaParticle::delta_calculate_xs()" << std::endl;
+//   //   }
+//   // };
+
+//   openmc::DeltaParticle p;
+
+//   openmc::initialize_history(p, 10);
+
+//   // p.get_all_materials();
+//   while (p.vir_collision_ == true) {
+//     p.delta_calculate_xs();
+//     p.delta_advance();
+//     // p.delta_cross_surface();
+
+//     // p.event_calculate_xs();
+//     // p.event_advance();
+//     // p.event_cross_surface();
+//     // event_cross_surface()之后材料截面会变化
+//   }
+//   //   std::cout << p.r().x << std::endl;
+
+//   std::cout << "the n_coord_levels is: " << openmc::model::n_coord_levels
+//             << std::endl;
+
+//   return 0;
+// }

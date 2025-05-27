@@ -1,5 +1,9 @@
 # neutronics-workshop examples
 neutronics-workshop-main/
+OpenMC_Other_Softwares/
+OpenMC_PYTHON_TESTS/
+OpenMC_INPUT_CARDS/
+OpenMC_CPP_TESTS/
 
 # Compiled objects and modules
 *.a

@@ -78,9 +78,20 @@ public:
     std::cout << get_a_int() << std::endl;
   }
 
+  // 变量名不能和函数名重复
+  // get and set function!!!
+  int& b() { return b_; }
+  void print_b()
+  {
+    b() = 110;
+    std::cout << "The b value in SubA: " << b_ << std::endl;
+  }
+
 private:
   std::string sub_a_str_;
   int sub_a_int_;
+
+  int b_;
 };
 
 int main()
@@ -130,6 +141,7 @@ int main()
   SubA* sub_obj_ptr = &obj;
   sub_obj_ptr->print();
   sub_obj_ptr->print_a();
+  sub_obj_ptr->print_b();
   std::cout << std::endl;
 
   // obj_abstract_ptr is a pointer to sub_obj_ptr
