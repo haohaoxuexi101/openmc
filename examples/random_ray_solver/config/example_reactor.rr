@@ -1,0 +1,50 @@
+# 示例输入：三群三区域系统
+[global]
+groups = 3
+histories = 20000
+seed = 20240615
+max_steps = 2000
+
+[material reflector]
+sigma_a = 0.005 0.003 0.002
+sigma_f = 0.000 0.000 0.000
+nu = 0.0 0.0 0.0
+chi = 1.0 0.0 0.0
+sigma_s_row0 = 0.35 0.10 0.00
+sigma_s_row1 = 0.08 0.32 0.02
+sigma_s_row2 = 0.00 0.05 0.28
+
+[material moderator]
+sigma_a = 0.020 0.010 0.005
+sigma_f = 0.000 0.000 0.000
+nu = 0.0 0.0 0.0
+chi = 1.0 0.0 0.0
+sigma_s_row0 = 0.40 0.15 0.00
+sigma_s_row1 = 0.10 0.35 0.05
+sigma_s_row2 = 0.00 0.08 0.30
+
+[material fuel]
+sigma_a = 0.080 0.120 0.200
+sigma_f = 0.050 0.060 0.070
+nu = 2.50 2.30 2.10
+chi = 0.60 0.30 0.10
+sigma_s_row0 = 0.20 0.05 0.00
+sigma_s_row1 = 0.04 0.30 0.03
+sigma_s_row2 = 0.00 0.05 0.40
+
+#region 定义从外到内依次嵌套
+[region reflector]
+box = -50 -50 -50 50 50 50
+material = reflector
+
+[region moderator]
+box = -25 -25 -25 25 25 25
+material = moderator
+
+[region fuel]
+box = -10 -10 -10 10 10 10
+material = fuel
+
+[source core]
+region = fuel
+group_pdf = 0.2 0.4 0.4
