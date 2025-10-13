@@ -53,6 +53,8 @@ extern "C" bool reduce_tallies;      //!< reduce tallies at end of batch?
 extern bool res_scat_on;             //!< use resonance upscattering method?
 extern "C" bool restart_run;         //!< restart run?
 extern "C" bool run_CE;              //!< run with continuous-energy data?
+extern bool cuda_enabled;            //!< is CUDA acceleration enabled?
+extern bool cuda_accelerate_advance; //!< offload advance event to CUDA?
 extern bool source_latest;           //!< write latest source at each batch?
 extern bool source_separate;         //!< write source to separate file?
 extern bool source_write;            //!< write source in HDF5 files?
@@ -120,6 +122,8 @@ extern int max_tracks; //!< Maximum number of particle tracks written to file
 extern ResScatMethod res_scat_method; //!< resonance upscattering method
 extern double res_scat_energy_min; //!< Min energy in [eV] for res. upscattering
 extern double res_scat_energy_max; //!< Max energy in [eV] for res. upscattering
+extern int cuda_block_size; //!< CUDA block size used for kernels
+extern int cuda_max_batch;  //!< Maximum number of particles processed per GPU batch
 extern vector<std::string>
   res_scat_nuclides;           //!< Nuclides using res. upscattering treatment
 extern RunMode run_mode;       //!< Run mode (eigenvalue, fixed src, etc.)

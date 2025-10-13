@@ -20,3 +20,4 @@ other related topics.
     user-input
     docbuild
     docker
+    cuda_acceleration

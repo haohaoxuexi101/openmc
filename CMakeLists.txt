@@ -35,6 +35,7 @@ option(OPENMC_USE_MPI         "Enable MPI"                                      
 option(OPENMC_USE_MCPL        "Enable MCPL"                                          OFF)
 option(OPENMC_USE_NCRYSTAL    "Enable support for NCrystal scattering"               OFF)
 option(OPENMC_USE_UWUW        "Enable UWUW"                                          OFF)
+option(OPENMC_USE_CUDA        "Enable GPU acceleration with CUDA"                    OFF)
 
 message(STATUS "OPENMC_USE_OPENMP ${OPENMC_USE_OPENMP}")
 message(STATUS "OPENMC_BUILD_TESTS ${OPENMC_BUILD_TESTS}")
@@ -46,6 +47,7 @@ message(STATUS "OPENMC_USE_MPI ${OPENMC_USE_MPI}")
 message(STATUS "OPENMC_USE_MCPL ${OPENMC_USE_MCPL}")
 message(STATUS "OPENMC_USE_NCRYSTAL ${OPENMC_USE_NCRYSTAL}")
 message(STATUS "OPENMC_USE_UWUW ${OPENMC_USE_UWUW}")
+message(STATUS "OPENMC_USE_CUDA ${OPENMC_USE_CUDA}")
 
 # Warnings for deprecated options
 foreach(OLD_OPT IN ITEMS "openmp" "profile" "coverage" "dagmc" "libmesh")
@@ -164,6 +166,17 @@ endif()
 #===============================================================================
 
 find_package(PNG)
+
+#===============================================================================
+# CUDA support
+#===============================================================================
+
+if(OPENMC_USE_CUDA)
+  enable_language(CUDA)
+  set(CMAKE_CUDA_STANDARD 17)
+  set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+  find_package(CUDAToolkit REQUIRED)
+endif()
 
 #===============================================================================
 # HDF5 for binary output
@@ -446,6 +459,14 @@ list(APPEND libopenmc_SOURCES
   src/xml_interface.cpp
   src/xsdata.cpp)
 
+list(APPEND libopenmc_SOURCES
+  src/gpu/driver.cpp)
+
+if (OPENMC_USE_CUDA)
+  list(APPEND libopenmc_SOURCES
+    src/gpu/driver.cu)
+endif()
+
 # Add bundled external dependencies
 list(APPEND libopenmc_SOURCES
   src/external/quartic_solver.cpp
@@ -507,6 +528,11 @@ endif()
 # linker flags. Thus, we can pass both linker flags and libraries together.
 target_link_libraries(libopenmc ${ldflags} ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES}
                       xtensor fmt::fmt ${CMAKE_DL_LIBS})
+
+if(OPENMC_USE_CUDA)
+  target_link_libraries(libopenmc CUDA::cudart)
+  target_compile_definitions(libopenmc PUBLIC -DOPENMC_USE_CUDA)
+endif()
 
 if(TARGET pugixml::pugixml)
   target_link_libraries(libopenmc pugixml::pugixml)

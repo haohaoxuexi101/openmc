@@ -2,6 +2,8 @@
 #include "openmc/material.h"
 #include "openmc/simulation.h"
 #include "openmc/timer.h"
+#include "openmc/geometry.h"
+#include "openmc/gpu/driver.h"
 
 namespace openmc {
 
@@ -106,6 +108,13 @@ void process_calculate_xs_events(SharedArray<EventQueueItem>& queue)
 void process_advance_particle_events()
 {
   simulation::time_event_advance_particle.start();
+
+#ifdef OPENMC_USE_CUDA
+  if (cuda::process_advance_event_queue(simulation::advance_particle_queue)) {
+    simulation::time_event_advance_particle.stop();
+    return;
+  }
+#endif
 
 #pragma omp parallel for schedule(runtime)
   for (int64_t i = 0; i < simulation::advance_particle_queue.size(); i++) {

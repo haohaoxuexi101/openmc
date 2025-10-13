@@ -10,6 +10,7 @@
 #include "openmc/event.h"
 #include "openmc/geometry.h"
 #include "openmc/geometry_aux.h"
+#include "openmc/gpu/driver.h"
 #include "openmc/material.h"
 #include "openmc/mesh.h"
 #include "openmc/message_passing.h"
@@ -63,6 +64,9 @@ using namespace openmc;
 
 int openmc_finalize()
 {
+#ifdef OPENMC_USE_CUDA
+  cuda::finalize_runtime();
+#endif
   if (simulation::initialized)
     openmc_simulation_finalize();
 
@@ -116,6 +120,10 @@ int openmc_finalize()
   settings::res_scat_energy_max = 1000.0;
   settings::restart_run = false;
   settings::run_CE = true;
+  settings::cuda_enabled = false;
+  settings::cuda_accelerate_advance = false;
+  settings::cuda_block_size = 256;
+  settings::cuda_max_batch = 50000;
   settings::run_mode = RunMode::UNSET;
   settings::source_latest = false;
   settings::source_separate = false;
