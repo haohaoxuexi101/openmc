@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(openmc C CXX)
 
+# Tutorial programs for documentation-driven teaching
+add_subdirectory(examples/object_oriented_tutorial)
+
 # Set version numbers
 set(OPENMC_VERSION_MAJOR 0)
 set(OPENMC_VERSION_MINOR 15)
