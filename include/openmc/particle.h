@@ -70,6 +70,7 @@ public:
   void event_collide();
   void event_revive_from_secondary();
   void event_death();
+  void advance_along_distance(double distance);
 
   //! pulse-height recording
   void pht_collision_energy();

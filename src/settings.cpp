@@ -1,7 +1,8 @@
 #include "openmc/settings.h"
 
-#include <cmath>  // for ceil, pow
-#include <limits> // for numeric_limits
+#include <algorithm> // for max
+#include <cmath>     // for ceil, pow
+#include <limits>    // for numeric_limits
 #include <string>
 
 #include <fmt/core.h>
@@ -61,6 +62,8 @@ bool reduce_tallies {true};
 bool res_scat_on {false};
 bool restart_run {false};
 bool run_CE {true};
+bool cuda_enabled {false};
+bool cuda_accelerate_advance {false};
 bool source_latest {false};
 bool source_separate {false};
 bool source_write {true};
@@ -113,6 +116,8 @@ int max_tracks {1000};
 ResScatMethod res_scat_method {ResScatMethod::rvs};
 double res_scat_energy_min {0.01};
 double res_scat_energy_max {1000.0};
+int cuda_block_size {256};
+int cuda_max_batch {50000};
 vector<std::string> res_scat_nuclides;
 RunMode run_mode {RunMode::UNSET};
 SolverType solver_type {SolverType::MONTE_CARLO};
@@ -480,6 +485,33 @@ void read_settings_xml(pugi::xml_node root)
     if (run_CE)
       fatal_error("multi-group energy mode must be specified in settings XML "
                   "when using the random ray solver.");
+  }
+
+  if (check_for_node(root, "cuda")) {
+    auto node_cuda = root.child("cuda");
+    if (check_for_node(node_cuda, "enable")) {
+      cuda_enabled = get_node_value_bool(node_cuda, "enable");
+    } else {
+      cuda_enabled = true;
+    }
+    if (check_for_node(node_cuda, "accelerate_advance")) {
+      cuda_accelerate_advance =
+        get_node_value_bool(node_cuda, "accelerate_advance");
+    }
+    if (check_for_node(node_cuda, "block_size")) {
+      cuda_block_size =
+        std::max(1, std::stoi(get_node_value(node_cuda, "block_size")));
+    }
+    if (check_for_node(node_cuda, "max_batch_size")) {
+      cuda_max_batch =
+        std::max(1, std::stoi(get_node_value(node_cuda, "max_batch_size")));
+    }
+#ifndef OPENMC_USE_CUDA
+    if (cuda_enabled || cuda_accelerate_advance) {
+      fatal_error("CUDA options were supplied in settings.xml, but OpenMC was "
+                  "built without CUDA support.");
+    }
+#endif
   }
 
   if (run_mode == RunMode::EIGENVALUE || run_mode == RunMode::FIXED_SOURCE) {

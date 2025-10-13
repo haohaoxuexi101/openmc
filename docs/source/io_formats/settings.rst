@@ -463,6 +463,38 @@ found in the :ref:`random ray user guide <random_ray>`.
 
     *Default*: prng
 
+-----------------
+``<cuda>`` Element
+-----------------
+
+The ``<cuda>`` element configures optional CUDA acceleration. When present,
+OpenMC attempts to initialize a CUDA-capable device during startup. If OpenMC
+was not built with CUDA support, specifying this element results in a fatal
+error.
+
+  :enable:
+    Indicates whether CUDA support should be enabled. Accepts values "true" or
+    "false".
+
+    *Default*: If the ``<cuda>`` element is present, "true".
+
+  :accelerate_advance:
+    When "true", the event-based ``advance`` stage samples distances to
+    collision using a CUDA kernel. Only available in event-based mode.
+
+    *Default*: false
+
+  :block_size:
+    Controls the CUDA thread block size used by the advance kernel.
+
+    *Default*: 256
+
+  :max_batch_size:
+    Maximum number of particle advance events processed per CUDA launch. Larger
+    values improve throughput at the cost of device memory usage.
+
+    *Default*: 50000
+
 ----------------------------------
 ``<resonance_scattering>`` Element
 ----------------------------------

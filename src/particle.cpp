@@ -216,20 +216,26 @@ void Particle::event_advance()
   boundary() = distance_to_boundary(*this);
 
   // Sample a distance to collision
+  double sampled_distance;
   if (type() == ParticleType::electron || type() == ParticleType::positron) {
-    collision_distance() = 0.0;
+    sampled_distance = 0.0;
   } else if (macro_xs().total == 0.0) {
-    collision_distance() = INFINITY;
+    sampled_distance = INFINITY;
   } else {
-    collision_distance() = -std::log(prn(current_seed())) / macro_xs().total;
+    sampled_distance = -std::log(prn(current_seed())) / macro_xs().total;
   }
 
-  // Select smaller of the two distances
-  double distance = std::min(boundary().distance, collision_distance());
+  collision_distance() = sampled_distance;
 
+  // Select smaller of the two distances
+  double distance = std::min(boundary().distance, sampled_distance);
+
+  advance_along_distance(distance);
+}
+
+void Particle::advance_along_distance(double distance)
+{
   // Advance particle in space and time
-  // Short-term solution until the surface source is revised and we can use
-  // this->move_distance(distance)
   for (int j = 0; j < n_coord(); ++j) {
     coord(j).r += distance * coord(j).u;
   }

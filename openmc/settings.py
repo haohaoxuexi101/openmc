@@ -395,6 +395,7 @@ class Settings:
         self._max_tracks = None
 
         self._random_ray = {}
+        self._cuda = None
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -1143,6 +1144,42 @@ class Settings:
 
         self._random_ray = random_ray
 
+    @property
+    def cuda(self) -> dict | None:
+        return self._cuda
+
+    @cuda.setter
+    def cuda(self, config: dict | None):
+        if config is None:
+            self._cuda = None
+            return
+
+        if not isinstance(config, Mapping):
+            raise ValueError(
+                f'Unable to set cuda from "{config}" which is not a dict.')
+
+        allowed = {'enable', 'accelerate_advance', 'block_size', 'max_batch_size'}
+        for key in config:
+            if key not in allowed:
+                raise ValueError(
+                    f"Unknown CUDA key: '{key}'. Allowed keys are {allowed}.")
+
+        parsed: dict[str, object] = {}
+        if 'enable' in config:
+            parsed['enable'] = bool(config['enable'])
+        if 'accelerate_advance' in config:
+            parsed['accelerate_advance'] = bool(config['accelerate_advance'])
+        if 'block_size' in config:
+            cv.check_type('CUDA block_size', config['block_size'], Integral)
+            cv.check_greater_than('CUDA block_size', config['block_size'], 0)
+            parsed['block_size'] = int(config['block_size'])
+        if 'max_batch_size' in config:
+            cv.check_type('CUDA max_batch_size', config['max_batch_size'], Integral)
+            cv.check_greater_than('CUDA max_batch_size', config['max_batch_size'], 0)
+            parsed['max_batch_size'] = int(config['max_batch_size'])
+
+        self._cuda = parsed
+
     def _create_run_mode_subelement(self, root):
         elem = ET.SubElement(root, "run_mode")
         elem.text = self._run_mode.value
@@ -1573,6 +1610,16 @@ class Settings:
                     subelement = ET.SubElement(element, key)
                     subelement.text = str(value)
 
+    def _create_cuda_subelement(self, root):
+        if self._cuda:
+            element = ET.SubElement(root, "cuda")
+            for key, value in self._cuda.items():
+                subelement = ET.SubElement(element, key)
+                if isinstance(value, bool):
+                    subelement.text = str(value).lower()
+                else:
+                    subelement.text = str(value)
+
     def _eigenvalue_from_xml_element(self, root):
         elem = root.find('eigenvalue')
         if elem is not None:
@@ -1957,6 +2004,25 @@ class Settings:
                 elif child.tag == 'sample_method':
                     self.random_ray['sample_method'] = child.text
 
+    def _cuda_from_xml_element(self, root):
+        elem = root.find('cuda')
+        if elem is None:
+            return
+
+        config: dict[str, object] = {}
+        for child in elem:
+            if child.tag in {'enable', 'accelerate_advance'}:
+                config[child.tag] = child.text in ('true', '1')
+            elif child.tag == 'block_size':
+                config[child.tag] = int(child.text)
+            elif child.tag == 'max_batch_size':
+                config[child.tag] = int(child.text)
+            else:
+                raise ValueError(
+                    f"Unknown CUDA XML tag '{child.tag}' in settings.xml.")
+
+        self.cuda = config
+
     def to_xml_element(self, mesh_memo=None):
         """Create a 'settings' element to be written to an XML file.
 
@@ -2021,6 +2087,7 @@ class Settings:
         self._create_max_history_splits_subelement(element)
         self._create_max_tracks_subelement(element)
         self._create_random_ray_subelement(element)
+        self._create_cuda_subelement(element)
 
         # Clean the indentation in the file to be user-readable
         clean_indentation(element)
@@ -2126,6 +2193,7 @@ class Settings:
         settings._max_history_splits_from_xml_element(elem)
         settings._max_tracks_from_xml_element(elem)
         settings._random_ray_from_xml_element(elem)
+        settings._cuda_from_xml_element(elem)
 
         # TODO: Get volume calculations
         return settings

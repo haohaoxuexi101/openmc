@@ -23,6 +23,7 @@
 #include "openmc/message_passing.h"
 #include "openmc/mgxs_interface.h"
 #include "openmc/nuclide.h"
+#include "openmc/gpu/driver.h"
 #include "openmc/openmp_interface.h"
 #include "openmc/output.h"
 #include "openmc/plot.h"
@@ -123,6 +124,12 @@ int openmc_init(int argc, char* argv[], const void* intracomm)
 
   // Write some initial output under the header if needed
   initial_output();
+
+#ifdef OPENMC_USE_CUDA
+  if (settings::cuda_enabled || settings::cuda_accelerate_advance) {
+    cuda::initialize_runtime();
+  }
+#endif
 
   // Check for particle restart run
   if (settings::particle_restart_run)
