@@ -11,6 +11,7 @@ Theory and Methodology
     introduction
     geometry
     cross_sections
+    resonance_doppler_demo
     random_numbers
     neutron_physics
     photon_physics
