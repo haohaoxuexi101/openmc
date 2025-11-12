@@ -4,8 +4,10 @@
 #include "openmc/geometry.h"
 #include "openmc/message_passing.h"
 #include "openmc/mgxs_interface.h"
+#include "openmc/random_ray/exponential.h"
 #include "openmc/random_ray/flat_source_domain.h"
 #include "openmc/random_ray/linear_source_domain.h"
+#include "openmc/random_ray/random_ray_cuda.h"
 #include "openmc/search.h"
 #include "openmc/settings.h"
 #include "openmc/simulation.h"
@@ -19,163 +21,6 @@ namespace openmc {
 //==============================================================================
 // Non-method functions
 //==============================================================================
-
-// returns 1 - exp(-tau)
-// Equivalent to -(_expm1f(-tau)), but faster
-// Written by Colin Josey.
-float cjosey_exponential(float tau)
-{
-  constexpr float c1n = -1.0000013559236386308f;
-  constexpr float c2n = 0.23151368626911062025f;
-  constexpr float c3n = -0.061481916409314966140f;
-  constexpr float c4n = 0.0098619906458127653020f;
-  constexpr float c5n = -0.0012629460503540849940f;
-  constexpr float c6n = 0.00010360973791574984608f;
-  constexpr float c7n = -0.000013276571933735820960f;
-
-  constexpr float c0d = 1.0f;
-  constexpr float c1d = -0.73151337729389001396f;
-  constexpr float c2d = 0.26058381273536471371f;
-  constexpr float c3d = -0.059892419041316836940f;
-  constexpr float c4d = 0.0099070188241094279067f;
-  constexpr float c5d = -0.0012623388962473160860f;
-  constexpr float c6d = 0.00010361277635498731388f;
-  constexpr float c7d = -0.000013276569500666698498f;
-
-  float x = -tau;
-
-  float den = c7d;
-  den = den * x + c6d;
-  den = den * x + c5d;
-  den = den * x + c4d;
-  den = den * x + c3d;
-  den = den * x + c2d;
-  den = den * x + c1d;
-  den = den * x + c0d;
-
-  float num = c7n;
-  num = num * x + c6n;
-  num = num * x + c5n;
-  num = num * x + c4n;
-  num = num * x + c3n;
-  num = num * x + c2n;
-  num = num * x + c1n;
-  num = num * x;
-
-  return num / den;
-}
-
-// The below two functions (exponentialG and exponentialG2) were developed
-// by Colin Josey. The implementation of these functions is closely based
-// on the OpenMOC versions of these functions. The OpenMOC license is given
-// below:
-
-// Copyright (C) 2012-2023 Massachusetts Institute of Technology and OpenMOC
-// contributors
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-// Computes y = 1/x-(1-exp(-x))/x**2 using a 5/6th order rational
-// approximation. It is accurate to 2e-7 over [0, 1e5]. Developed by Colin
-// Josey using Remez's algorithm, with original implementation in OpenMOC at:
-// https://github.com/mit-crpg/OpenMOC/blob/develop/src/exponentials.h
-float exponentialG(float tau)
-{
-  // Numerator coefficients in rational approximation for 1/x - (1 - exp(-x)) /
-  // x^2
-  constexpr float d0n = 0.5f;
-  constexpr float d1n = 0.176558112351595f;
-  constexpr float d2n = 0.04041584305811143f;
-  constexpr float d3n = 0.006178333902037397f;
-  constexpr float d4n = 0.0006429894635552992f;
-  constexpr float d5n = 0.00006064409107557148f;
-
-  // Denominator coefficients in rational approximation for 1/x - (1 - exp(-x))
-  // / x^2
-  constexpr float d0d = 1.0f;
-  constexpr float d1d = 0.6864462055546078f;
-  constexpr float d2d = 0.2263358514260129f;
-  constexpr float d3d = 0.04721469893686252f;
-  constexpr float d4d = 0.006883236664917246f;
-  constexpr float d5d = 0.0007036272419147752f;
-  constexpr float d6d = 0.00006064409107557148f;
-
-  float x = tau;
-
-  float num = d5n;
-  num = num * x + d4n;
-  num = num * x + d3n;
-  num = num * x + d2n;
-  num = num * x + d1n;
-  num = num * x + d0n;
-
-  float den = d6d;
-  den = den * x + d5d;
-  den = den * x + d4d;
-  den = den * x + d3d;
-  den = den * x + d2d;
-  den = den * x + d1d;
-  den = den * x + d0d;
-
-  return num / den;
-}
-
-// Computes G2 : y = 2/3 - (1 + 2/x) * (1/x + 0.5 - (1 + 1/x) * (1-exp(-x)) /
-// x) using a 5/5th order rational approximation. It is accurate to 1e-6 over
-// [0, 1e6]. Developed by Colin Josey using Remez's algorithm, with original
-// implementation in OpenMOC at:
-// https://github.com/mit-crpg/OpenMOC/blob/develop/src/exponentials.h
-float exponentialG2(float tau)
-{
-
-  // Coefficients for numerator in rational approximation
-  constexpr float g1n = -0.08335775885589858f;
-  constexpr float g2n = -0.003603942303847604f;
-  constexpr float g3n = 0.0037673183263550827f;
-  constexpr float g4n = 0.00001124183494990467f;
-  constexpr float g5n = 0.00016837426505799449f;
-
-  // Coefficients for denominator in rational approximation
-  constexpr float g1d = 0.7454048371823628f;
-  constexpr float g2d = 0.23794300531408347f;
-  constexpr float g3d = 0.05367250964303789f;
-  constexpr float g4d = 0.006125197988351906f;
-  constexpr float g5d = 0.0010102514456857377f;
-
-  float x = tau;
-
-  float num = g5n;
-  num = num * x + g4n;
-  num = num * x + g3n;
-  num = num * x + g2n;
-  num = num * x + g1n;
-  num = num * x;
-
-  float den = g5d;
-  den = den * x + g4d;
-  den = den * x + g3d;
-  den = den * x + g2d;
-  den = den * x + g1d;
-  den = den * x + 1.0f;
-
-  return num / den;
-}
 
 // Implementation of the Fisher-Yates shuffle algorithm.
 // Algorithm adapted from:
@@ -379,15 +224,35 @@ void RandomRay::attenuate_flux_flat_source(double distance, bool is_active)
   int material = this->material();
 
   // MOC incoming flux attenuation + source contribution/attenuation equation
-  for (int g = 0; g < negroups_; g++) {
-    float sigma_t = domain_->sigma_t_[material * negroups_ + g];
-    float tau = sigma_t * distance;
-    float exponential = cjosey_exponential(tau); // exponential = 1 - exp(-tau)
-    float new_delta_psi =
-      (angular_flux_[g] - domain_->source_regions_.source(sr, g)) * exponential;
-    delta_psi_[g] = new_delta_psi;
-    angular_flux_[g] -= new_delta_psi;
+#ifdef OPENMC_USE_CUDA
+  bool used_cuda = false;
+  if (random_ray::cuda::available()) {
+    thread_local vector<float> source_buffer;
+    if (source_buffer.size() < static_cast<size_t>(negroups_)) {
+      source_buffer.resize(negroups_);
+    }
+    for (int g = 0; g < negroups_; g++) {
+      source_buffer[g] = domain_->source_regions_.source(sr, g);
+    }
+    random_ray::cuda::attenuate_flat_source(negroups_, distance,
+      &domain_->sigma_t_[material * negroups_], source_buffer.data(),
+      angular_flux_.data(), delta_psi_.data());
+    used_cuda = true;
   }
+  if (!used_cuda) {
+#endif
+    for (int g = 0; g < negroups_; g++) {
+      double sigma_t = domain_->sigma_t_[material * negroups_ + g];
+      float tau = static_cast<float>(sigma_t * distance);
+      float exponential = cjosey_exponential(tau); // exponential = 1 - exp(-tau)
+      float new_delta_psi =
+        (angular_flux_[g] - domain_->source_regions_.source(sr, g)) * exponential;
+      delta_psi_[g] = new_delta_psi;
+      angular_flux_[g] -= new_delta_psi;
+    }
+#ifdef OPENMC_USE_CUDA
+  }
+#endif
 
   // If ray is in the active phase (not in dead zone), make contributions to
   // source region bookkeeping

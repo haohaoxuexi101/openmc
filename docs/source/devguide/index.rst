@@ -20,3 +20,5 @@ other related topics.
     user-input
     docbuild
     docker
+    random_ray_cuda
+
