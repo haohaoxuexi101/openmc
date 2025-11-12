@@ -35,6 +35,7 @@ option(OPENMC_USE_MPI         "Enable MPI"                                      
 option(OPENMC_USE_MCPL        "Enable MCPL"                                          OFF)
 option(OPENMC_USE_NCRYSTAL    "Enable support for NCrystal scattering"               OFF)
 option(OPENMC_USE_UWUW        "Enable UWUW"                                          OFF)
+option(OPENMC_USE_CUDA        "Enable CUDA acceleration for selected kernels"        OFF)
 
 message(STATUS "OPENMC_USE_OPENMP ${OPENMC_USE_OPENMP}")
 message(STATUS "OPENMC_BUILD_TESTS ${OPENMC_BUILD_TESTS}")
@@ -46,6 +47,7 @@ message(STATUS "OPENMC_USE_MPI ${OPENMC_USE_MPI}")
 message(STATUS "OPENMC_USE_MCPL ${OPENMC_USE_MCPL}")
 message(STATUS "OPENMC_USE_NCRYSTAL ${OPENMC_USE_NCRYSTAL}")
 message(STATUS "OPENMC_USE_UWUW ${OPENMC_USE_UWUW}")
+message(STATUS "OPENMC_USE_CUDA ${OPENMC_USE_CUDA}")
 
 # Warnings for deprecated options
 foreach(OLD_OPT IN ITEMS "openmp" "profile" "coverage" "dagmc" "libmesh")
@@ -93,6 +95,16 @@ endif()
 
 if(OPENMC_USE_OPENMP)
   find_package(OpenMP REQUIRED)
+endif()
+
+#===============================================================================
+# CUDA acceleration
+#===============================================================================
+
+if(OPENMC_USE_CUDA)
+  enable_language(CUDA)
+  find_package(CUDAToolkit REQUIRED)
+  message(STATUS "Found CUDA toolkit: ${CUDAToolkit_VERSION}")
 endif()
 
 #===============================================================================
@@ -385,6 +397,7 @@ list(APPEND libopenmc_SOURCES
   src/random_lcg.cpp
   src/random_ray/random_ray_simulation.cpp
   src/random_ray/random_ray.cpp
+  src/random_ray/random_ray_cuda.cpp
   src/random_ray/flat_source_domain.cpp
   src/random_ray/linear_source_domain.cpp
   src/random_ray/moment_matrix.cpp
@@ -446,6 +459,11 @@ list(APPEND libopenmc_SOURCES
   src/xml_interface.cpp
   src/xsdata.cpp)
 
+if(OPENMC_USE_CUDA)
+  list(APPEND libopenmc_SOURCES
+    src/random_ray/random_ray_cuda.cu)
+endif()
+
 # Add bundled external dependencies
 list(APPEND libopenmc_SOURCES
   src/external/quartic_solver.cpp
@@ -468,6 +486,13 @@ add_library(OpenMC::libopenmc ALIAS libopenmc)
 # Avoid vs error lnk1149 :output filename matches input filename
 if(NOT MSVC)
   set_target_properties(libopenmc PROPERTIES OUTPUT_NAME openmc)
+endif()
+
+if(OPENMC_USE_CUDA)
+  target_compile_definitions(libopenmc PUBLIC OPENMC_USE_CUDA)
+  target_link_libraries(libopenmc CUDA::cudart)
+  set_target_properties(libopenmc PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  set_target_properties(libopenmc PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON)
 endif()
 
 target_include_directories(libopenmc

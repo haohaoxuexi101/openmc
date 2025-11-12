@@ -22,3 +22,4 @@ Theory and Methodology
     cmfd
     variance_reduction
     random_ray
+    random_ray_cuda
